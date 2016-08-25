@@ -43,6 +43,7 @@ normative:
   RFC2119:
 
 informative:
+#        - rfc6790
   I-D.tempia-ippm-p3m:
   RFC5331:
   RFC5420: 
@@ -133,13 +134,13 @@ egress.  Errors in the accounting are particularly acute in Label
 Switched Paths (LSPs) subjected to ECMP because the network transit
 time will be different for the various ECMP paths since:
 
-    a.  The packets may traverse different sets of LSRs.
+1.  The packets may traverse different sets of LSRs.
 
-    b.  The packets may depart from different interfaces on different
-        line cards on LSRs
+2.  The packets may depart from different interfaces on different
+    line cards on LSRs
 
-    c.  The packets may arrive at different interfaces on different line
-        cards on LSRs.
+3.  The packets may arrive at different interfaces on different line
+    cards on LSRs.
 
 A consideration in modifying the identity label (the MPLS label
 ordinarily used to identify the LSP, Virtual Private Network,
@@ -177,14 +178,14 @@ identify at several different layers of the MPLS label stack.
 
 This document considers following units of identifications:
 
-    o  Per source LSR - everything from one source is aggregated.
++ Per source LSR - everything from one source is aggregated.
 
-    o  Per group of LSPs chosen by an ingress LSR - an ingress LSP
-       aggregates group of LSPs (ex: all LSPs of a tunnel).
++ Per group of LSPs chosen by an ingress LSR - an ingress LSP
+  aggregates group of LSPs (ex: all LSPs of a tunnel).
 
-    o  Per LSP - the basic form.
++ Per LSP - the basic form.
 
-    o  Per flow {{RFC6790}} within an LSP - fine graining method.
++ Per flow {{RFC6790}} within an LSP - fine graining method.
 
 Note that a fine grained identity resolution is needed when there is
 a need to perform these operations on a flow not readily identified
@@ -201,22 +202,22 @@ agreement or application performance were being investigated.
 We can thus characterize the identification requirement in the
 following broad terms:
 
-    o  There needs to be some way for an egress LSR to identify the
-       ingress LSR with an appropriate degree of scope.  This concept is
-       discussed further in {{scope}}.
+*  There needs to be some way for an egress LSR to identify the
+   ingress LSR with an appropriate degree of scope.  This concept is
+   discussed further in {{scope}}.
 
-    o  There needs to be a way to identify a specific LSP at the egress
-       node.  This allows for the case of instrumenting multiple LSPs
-       operate between the same pair of nodes.  In such cases the
-       identity of the ingress LSR is insufficient.
+*  There needs to be a way to identify a specific LSP at the egress
+   node.  This allows for the case of instrumenting multiple LSPs
+   operate between the same pair of nodes.  In such cases the
+   identity of the ingress LSR is insufficient.
 
-    o  In order to conserve resources such as labels, counters and/or
-       compute cycles it may be desirable to identify an LSP group so
-       that a operation can be performed on the group as an aggregate.
+*  In order to conserve resources such as labels, counters and/or
+   compute cycles it may be desirable to identify an LSP group so
+   that a operation can be performed on the group as an aggregate.
 
-    o  There needs to be a way to identify a flow within an LSP.  This is
-       necessary when investigating a specific flow that has been
-       aggregated into an LSP.
+*  There needs to be a way to identify a flow within an LSP.  This is
+   necessary when investigating a specific flow that has been
+   aggregated into an LSP.
 
 The unit of identification and the method of determining which
 packets constitute a flow will be application or use-case specific

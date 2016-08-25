@@ -5,12 +5,12 @@
 MPLS Working Group                                             S. Bryant
 Internet-Draft                                                   M. Chen
 Intended status: Informational                                     Z. Li
-Expires: February 25, 2017                                        Huawei
+Expires: February 26, 2017                                        Huawei
                                                             C. Pignataro
                                                            Cisco Systems
                                                                G. Mirsky
                                                                 Ericsson
-                                                         August 24, 2016
+                                                         August 25, 2016
 
 
                 MPLS Flow Identification Considerations
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on February 25, 2017.
+   This Internet-Draft will expire on February 26, 2017.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Bryant, et al.          Expires February 25, 2017               [Page 1]
+Bryant, et al.          Expires February 26, 2017               [Page 1]
 
 Internet-Draft                   MPLS FI                     August 2016
 
@@ -69,18 +69,18 @@ Table of Contents
    3.  Loss Measurement Considerations . . . . . . . . . . . . . . .   3
    4.  Delay Measurement Considerations  . . . . . . . . . . . . . .   4
    5.  Units of identification . . . . . . . . . . . . . . . . . . .   4
-   6.  Types of LSP  . . . . . . . . . . . . . . . . . . . . . . . .   6
-   7.  Network Scope . . . . . . . . . . . . . . . . . . . . . . . .   7
+   6.  Types of LSP  . . . . . . . . . . . . . . . . . . . . . . . .   5
+   7.  Network Scope . . . . . . . . . . . . . . . . . . . . . . . .   6
    8.  Backwards Compatibility . . . . . . . . . . . . . . . . . . .   7
    9.  Dataplane . . . . . . . . . . . . . . . . . . . . . . . . . .   7
-   10. Control Plane . . . . . . . . . . . . . . . . . . . . . . . .   9
-   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .   9
+   10. Control Plane . . . . . . . . . . . . . . . . . . . . . . . .   8
+   11. Privacy Considerations  . . . . . . . . . . . . . . . . . . .   8
    12. Security Considerations . . . . . . . . . . . . . . . . . . .   9
    13. IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
    14. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
    15. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      15.1.  Normative References . . . . . . . . . . . . . . . . . .   9
-     15.2.  Informative References . . . . . . . . . . . . . . . . .  10
+     15.2.  Informative References . . . . . . . . . . . . . . . . .   9
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
 
 1.  Introduction
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Bryant, et al.          Expires February 25, 2017               [Page 2]
+Bryant, et al.          Expires February 26, 2017               [Page 2]
 
 Internet-Draft                   MPLS FI                     August 2016
 
@@ -165,17 +165,17 @@ Internet-Draft                   MPLS FI                     August 2016
 
 
 
-Bryant, et al.          Expires February 25, 2017               [Page 3]
+Bryant, et al.          Expires February 26, 2017               [Page 3]
 
 Internet-Draft                   MPLS FI                     August 2016
 
 
-   a.  The packets may traverse different sets of LSRs.
+   1.  The packets may traverse different sets of LSRs.
 
-   b.  The packets may depart from different interfaces on different
+   2.  The packets may depart from different interfaces on different
        line cards on LSRs
 
-   c.  The packets may arrive at different interfaces on different line
+   3.  The packets may arrive at different interfaces on different line
        cards on LSRs.
 
    A consideration in modifying the identity label (the MPLS label
@@ -214,26 +214,21 @@ Internet-Draft                   MPLS FI                     August 2016
 
    This document considers following units of identifications:
 
-
-
-
-
-
-
-
-Bryant, et al.          Expires February 25, 2017               [Page 4]
-
-Internet-Draft                   MPLS FI                     August 2016
-
-
    o  Per source LSR - everything from one source is aggregated.
 
    o  Per group of LSPs chosen by an ingress LSR - an ingress LSP
       aggregates group of LSPs (ex: all LSPs of a tunnel).
 
+
+
+Bryant, et al.          Expires February 26, 2017               [Page 4]
+
+Internet-Draft                   MPLS FI                     August 2016
+
+
    o  Per LSP - the basic form.
 
-   o  Per flow {{RFC6790}} within an LSP - fine graining method.
+   o  Per flow [RFC6790] within an LSP - fine graining method.
 
    Note that a fine grained identity resolution is needed when there is
    a need to perform these operations on a flow not readily identified
@@ -252,7 +247,7 @@ Internet-Draft                   MPLS FI                     August 2016
 
    o  There needs to be some way for an egress LSR to identify the
       ingress LSR with an appropriate degree of scope.  This concept is
-      discussed further in {{scope}}.
+      discussed further in Section 7.
 
    o  There needs to be a way to identify a specific LSP at the egress
       node.  This allows for the case of instrumenting multiple LSPs
@@ -271,17 +266,6 @@ Internet-Draft                   MPLS FI                     August 2016
    packets constitute a flow will be application or use-case specific
    and is out of scope of this memo.
 
-
-
-
-
-
-
-Bryant, et al.          Expires February 25, 2017               [Page 5]
-
-Internet-Draft                   MPLS FI                     August 2016
-
-
 6.  Types of LSP
 
    We need to consider a number of types of LSP.  The two simplest types
@@ -290,6 +274,14 @@ Internet-Draft                   MPLS FI                     August 2016
    the Resource Reservation Protocol - Traffic Engineering (RSVP-TE)
    [RFC5420] signalling protocol, or those that conform to the MPLS
    Transport Profile (MPLS-TP) [RFC5654] may be identified by inspection
+
+
+
+Bryant, et al.          Expires February 26, 2017               [Page 5]
+
+Internet-Draft                   MPLS FI                     August 2016
+
+
    of the top label in the stack, since at any provider-edge (PE) or
    provider (P) router on the path this is unique to the ingress-egress
    pair at every hop at a given layer in the LSP hierarchy.  Provided
@@ -328,16 +320,6 @@ Internet-Draft                   MPLS FI                     August 2016
    be constrained to be unique within the set of multi-point to multi-
    point LSPs terminating on any common node.
 
-
-
-
-
-
-Bryant, et al.          Expires February 25, 2017               [Page 6]
-
-Internet-Draft                   MPLS FI                     August 2016
-
-
 7.  Network Scope
 
    The scope of identification can be constrained to the set of flows
@@ -348,6 +330,14 @@ Internet-Draft                   MPLS FI                     August 2016
    In any solution that constrains itself to carrying the required
    identity in the MPLS label stack rather than in some different
    associated data structure, constraints on the label stack size imply
+
+
+
+Bryant, et al.          Expires February 26, 2017               [Page 6]
+
+Internet-Draft                   MPLS FI                     August 2016
+
+
    that the scope of identity reside within that MPLS domain.  For
    similar reasons the identity scope of a component of an LSP should be
    constrained to the scope of that LSP.
@@ -386,14 +376,6 @@ Internet-Draft                   MPLS FI                     August 2016
    requires such changes.  For these reasons, the MPLS designers have
    set a very high bar to changes to the MPLS data plane, and only a
    very small number have been adopted.  Hence, it is important that the
-
-
-
-Bryant, et al.          Expires February 25, 2017               [Page 7]
-
-Internet-Draft                   MPLS FI                     August 2016
-
-
    method of identification must minimize changes to the MPLS data
    plane.  Ideally method(s) of identification that require no changes
    to the MPLS data plane should be given preferential consideration.
@@ -404,6 +386,14 @@ Internet-Draft                   MPLS FI                     August 2016
    the MPLS data plane proves necessary, it should be (a) be as small a
    change as possible and (b) be a general purpose method so as to
    maximise its use for future applications.  It is imperative that, as
+
+
+
+Bryant, et al.          Expires February 26, 2017               [Page 7]
+
+Internet-Draft                   MPLS FI                     August 2016
+
+
    far as can be foreseen, any necessary change made to the MPLS data
    plane does not impose any foreseeable future limitation on the MPLS
    data plane.
@@ -440,16 +430,6 @@ Internet-Draft                   MPLS FI                     August 2016
    solution may use SPL(s), methods that do not require SPLs need to be
    carefully considered.
 
-
-
-
-
-
-Bryant, et al.          Expires February 25, 2017               [Page 8]
-
-Internet-Draft                   MPLS FI                     August 2016
-
-
 10.  Control Plane
 
    Any flow identity design should both seek to minimise the complexity
@@ -462,6 +442,14 @@ Internet-Draft                   MPLS FI                     August 2016
    provides more identity information and hence potentially degrades the
    privacy of the communication.  Recent IETF concerns on pervasive
    monitoring [RFC7258] would lead it to prefer a solution that does not
+
+
+
+Bryant, et al.          Expires February 26, 2017               [Page 8]
+
+Internet-Draft                   MPLS FI                     August 2016
+
+
    degrade the privacy of user traffic below that of an MPLS network not
    implementing the flow identification feature.  The minimizing the
    scope of the identity indication can be useful in minimizing the
@@ -498,14 +486,6 @@ Internet-Draft                   MPLS FI                     August 2016
               DOI 10.17487/RFC2119, March 1997,
               <http://www.rfc-editor.org/info/rfc2119>.
 
-
-
-
-Bryant, et al.          Expires February 25, 2017               [Page 9]
-
-Internet-Draft                   MPLS FI                     August 2016
-
-
 15.2.  Informative References
 
    [I-D.tempia-ippm-p3m]
@@ -518,6 +498,13 @@ Internet-Draft                   MPLS FI                     August 2016
               Label Assignment and Context-Specific Label Space",
               RFC 5331, DOI 10.17487/RFC5331, August 2008,
               <http://www.rfc-editor.org/info/rfc5331>.
+
+
+
+Bryant, et al.          Expires February 26, 2017               [Page 9]
+
+Internet-Draft                   MPLS FI                     August 2016
+
 
    [RFC5420]  Farrel, A., Ed., Papadimitriou, D., Vasseur, JP., and A.
               Ayyangarps, "Encoding of Attributes for MPLS LSP
@@ -551,17 +538,6 @@ Internet-Draft                   MPLS FI                     August 2016
 
 Authors' Addresses
 
-
-
-
-
-
-
-Bryant, et al.          Expires February 25, 2017              [Page 10]
-
-Internet-Draft                   MPLS FI                     August 2016
-
-
    Stewart Bryant
    Huawei
 
@@ -578,6 +554,12 @@ Internet-Draft                   MPLS FI                     August 2016
    Huawei
 
    Email: lizhenbin@huawei.com
+
+
+
+Bryant, et al.          Expires February 26, 2017              [Page 10]
+
+Internet-Draft                   MPLS FI                     August 2016
 
 
    Carlos Pignataro
@@ -613,4 +595,22 @@ Internet-Draft                   MPLS FI                     August 2016
 
 
 
-Bryant, et al.          Expires February 25, 2017              [Page 11]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bryant, et al.          Expires February 26, 2017              [Page 11]
