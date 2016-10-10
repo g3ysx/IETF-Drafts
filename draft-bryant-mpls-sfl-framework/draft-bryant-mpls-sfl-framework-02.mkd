@@ -1,9 +1,9 @@
 ---
 coding: utf-8
 
-title: MPLS Flow Identification Considerations
+title: Synonymous Flow Label Framework
 abbrev: MPLS FI
-docname: draft-ietf-mpls-flow-ident-02
+docname: draft-bryant-mpls-sfl-framework-02
 wg: MPLS Working Group
 category: info
 
@@ -27,10 +27,15 @@ author:
        org: Huawei
        email: lizhenbin@huawei.com
   -
-       ins: C. Pignataro
-       name: Carlos Pignataro
+       ins: G. Swallow
+       name: George Swallow
        org: Cisco Systems
-       email: cpignata@cisco.com
+       email: swallow@cisco.com
+  -
+       ins: S. Sivabalan
+       name: Siva Sivabalan
+       org: Cisco Systems
+       email: msiva@cisco.com
   -
        ins: G. Mirsky
        name: Gregory Mirsky
@@ -39,18 +44,14 @@ author:
 
 
 normative:
-  RFC2119:
+  RFC5462:
 
 informative:
-  draft-ietf-mpls-flow-ident:
-  I-D.tempia-ippm-p3m:
-  RFC5331:
-  RFC5420: 
-  RFC5654: 
+  I-D.ietf-mpls-flow-ident:
   RFC6374:
   RFC6790:
   RFC7258:
-  RFC7274:
+
 
 
 
@@ -79,7 +80,7 @@ identification service.  These identifiers can be used to trigger
 per-flow operations on the packet at the receiving label switching
 router.
 
-# Synonymous Flow Labels
+# Synonymous Flow Labels {#SFL}
 
 An SFL is defined to be a label that causes exactly the same
 behaviour at the egress Label Switching Router (LSR) as the label it
@@ -131,13 +132,13 @@ allocated from the platform label table.
 
 # User Service Traffic in the Data Plane
 
-As noted in Section 2 it is necessary to consider two cases:
+As noted in {{SFL}} it is necessary to consider two cases:
 
 1.  Applications label present
 
 2.  Single label stack
 
-## Applications Label Present
+## Applications Label Present {#ALP}
 
 {{Figure1}} shows the case in which both an LSP label and an application
 label are present in the MPLS label stack.  Traffic with no SFL
@@ -161,13 +162,13 @@ batch.
 
 
     "Normal" Label Stack         Label Stack with SFL
-{: #Figure1 title:"Use of Synonymous Labels In A Two Label MPLS Label Stack"}
+{: #Figure1 title="Use of Synonymous Labels In A Two Label MPLS Label Stack"}
 
 At the egress LSR the LSP label is popped (if present).  Then the SFL
 is processed in exactly the same way as the corresponding application
 label would have been processed.
 
-### Setting TTL and the Traffic Class Bits
+### Setting TTL and the Traffic Class Bits {#TTLandTC}
 
 The TTL and the Traffic Class bits {{RFC5462}} in the SFL LSE would
 normally be set to the same value as would have been set in the label
@@ -176,7 +177,7 @@ may be an applications need to set the SFL to some other value.  An
 example would be where it was desired to cause the SFL to trigger an
 action in the TTL expiry exception path as part of the label action.
 
-## Single Label Stack
+## Single Label Stack {#SLS}
 
 {{Figure2}} shows the case in which only an LSP label is present in the
 MPLS label stack.  Traffic with no SFL function present runs over the
@@ -228,7 +229,7 @@ indistinguishable and thus either may be implemented.
 ### Setting TTL and the Traffic Class Bits
 
    The TTL and the Traffic Class considerations described in
-   Section 3.1.1 apply.
+   {{TTLandTC}} apply.
 
 ## Aggregation of SFL Actions
 
@@ -242,7 +243,7 @@ becomes too large to be viable.  In these circumstances it would be
 necessary to introduce an additional label in the stack to act as an
 aggregate instruction.  This is not strictly a synonymous action in
 that the SFL is not replacing a existing label, but is somewhat
-similar to the single label case shown in Section 3.2, and the same
+similar to the single label case shown in {{SLS}}, and the same
 signalling, management and configuration tools would be applicable.
 
                                   +-----------------+
@@ -273,7 +274,7 @@ signalling, management and configuration tools would be applicable.
 The Aggregate SFL is shown in the label stack depicted in Figure 3 as
 preceding the application label, however the choice of position
 before, or after, the application label will be application specific.
-In the case described in Section 3.1, by definition the SFL has the
+In the case described in {{ALP}}, by definition the SFL has the
 full application context.  In this case the positioning will depend
 on whether the SFL action needs the full context of the application
 to perform its action and whether the complexity of the application
@@ -302,7 +303,7 @@ a problem there are two solutions worthy of consideration:
 # Privacy Considerations {#privacy}
 
 Recent IETF concerns on pervasive monitoring are described in
-{{RFC7258}}.  The inclusion of originating and\/or flow information in a
+{{RFC7258}}.  The inclusion of originating and/or flow information in a
 packet provides more identity information and hence potentially
 degrades the privacy of the communication.  Whilst the inclusion of
 the additional granularity does allow greater insight into the flow
