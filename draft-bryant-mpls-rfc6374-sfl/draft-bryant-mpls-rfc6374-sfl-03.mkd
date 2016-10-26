@@ -30,7 +30,7 @@ author:
        ins: G. Swallow
        name: George Swallow
        org: Cisco Systems
-       email: swallow@cisco.com
+       email: swallow.ietf@gmail.com
   -
        ins: S. Sivabalan
        name: Siva Sivabalan
@@ -41,6 +41,11 @@ author:
        name: Gregory Mirsky
        org: Ericsson
        email: gregory.mirsky@eicsson.com
+  -
+       ins: G. Fioccola
+       name: Giuseppe Fioccola
+       org: Telecom Italia
+       email: giuseppe.fioccola@telecomitalia.it
 
 
 normative:
@@ -58,6 +63,7 @@ informative:
   I-D.tempia-ippm-p3m:
   RFC6374:
   RFC3270:
+  I-D.ietf-ippm-alt-mark:
   
 --- abstract
 
@@ -196,7 +202,7 @@ The problem is illustrated in {{FIGDM}} below:
 
 In case 1 of {{FIGDM}} we show the case were loss measurement alone
 is being carried out on the flow under analysis. For illustrative
-purposes consider that in the time interval being analysed, 10
+purposes consider that in the time interval being analyzed, 10
 packets always flow.
 
 Now consider case 2 of {{FIGDM}} where a small batch of
@@ -258,7 +264,97 @@ in the control plane.
 
 # Multiple Packet Delay Characteristics
 
-Provision is made for reporting the following delay characteristics:
+A number of methods are described. The expectation is that the MPLS WG
+possibly with the assistance of the IPPM WG will select one or maybe
+more than one of these methods for standardization.
+
+Three Methods are discussed:
+
+1. Time Buckets
+2. Classic Standard Deviation
+3. Average Delay
+
+## Method 1: Time Buckets
+
+In this method the receiving LSR measures the inter-packet gap, classifies the
+delay into a number of delay buckets and records the number of packets
+in each bucket. As an example, if the operator were concerned about packets with
+a delay of up to 1us, 2us, 4us, 8us, and over 8us then there would be five buckets
+and packets that arrived up to 1us would cause the 1us bucket counter to increase,
+between 1us and 2us the 2us bucket counter would increase etc. In practice it
+might be better in terms of processing and potential parallelism if, when a packet had
+a delay relative to its predecessor of 2us both the up to 1us and the 2us counter
+were incremented and any more detailed information was calculated in the analytics
+system.
+
+This method allows the operator to see more structure in the jitter characteristics
+than simply measuring the average jitter, and avoids the complication of needing
+to perform a per packet multiply, but will probably need to time intervals between
+buckets to be programmable by the operator.
+
+
+The packet format of an RFC6374 Bucket Jitter Measurement Message
+is shown below:
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |Version| Flags |  Control Code |        Message Length         |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |  QTF  |  RTF  | RPTF  |              Reserved                 |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                       Session Identifier          |    DS     |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    | Number of     |      Reserved                                 |
+    | Buckets       |                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                   Interval in 10ns units                      |
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                   Number pkts in Bucket                       |
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    ~                                                               ~
+    ~                                                               ~
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    ~                                                               ~
+    ~                           TLV Block                           ~
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+{: #FIGBucket title="Bucket Jitter Measurement Message Format"}
+
+The Version, Flags, Control Code, Message Length, QTF, RTF, RPTF,
+Session Identifier, and DS Fields are as defined in section 3.7
+of RFC6374. The remaining fields are as follows:
+
+    o Number of Buckets in the measurement
+
+    o Reserved must be sent as zero and ignored on receipt
+
+    o Interval in 10ns units is the inter-packet interval for
+      this bucket
+
+    o Number Pkts in Bucket is the number of packets found in
+      this bucket.
+
+There will be a number of Interval/Number pairs depending on the
+number of buckets being specified by the Querier. If an RFC6374
+message is being used to configure the buckets, the Responder
+MUST respond with 0 packets in each bucket until it has been
+configured for a full measurement period (i.e. it was configured
+at the time of the last response message). Out of band configuration
+is permitted by this mode of operation.
+
+Note this is a departure from the normal fixed format used in
+RFC6374. We need to establish if this is problematic or not. 
+
+This RFC6374 message is carried over an LSP in the way described in
+{{RFC6374}} and over an LSP with an SFL as described in {{RFC6374SFL}}.
+
+
+## Method 2 Classic Standard Deviation
+
+In this method, provision is made for reporting the following delay
+characteristics:
 
 1. Number of packets in the batch (n).
 2. Total time for the batch (S)
@@ -294,7 +390,7 @@ bandwidth to such a storage system and bandwidth to the analytics
 system. Such a measurement technique is outside the scope of this
 document.
 
-# RFC6374 Multi-Packet Delay Measurement Message Format
+### RFC6374 Multi-Packet Delay Measurement Message Format
 
 The packet format of an RFC6374 Multi-Packet Delay Measurement Message
 is shown below:
@@ -345,6 +441,80 @@ of RFC6374. The remaining fields are as follows:
 
 This RFC6374 message is carried over an LSP in the way described in
 {{RFC6374}} and over an LSP with an SFL as described in {{RFC6374SFL}}.
+
+## Average Delay
+
+Introduced in {{I-D.ietf-ippm-alt-mark}} is the concept of a one
+way delay measurement in which the average time of arrival of a
+set of packets is measured. In this approach the packet is time-stamped
+at arrival and the Responder returns the sum of the time-stamps
+and the number of times-tamps. From this the analytics engine can
+determine the mean delay. An alternative model is that the Responder
+returns the time stamp of the first and last packet and the
+number of packets. This method has the advantage of allowing the
+average delay to be determined at a number of points along the
+packet path and allowing the components of the delay to be
+characterized.
+
+The packet format of an RFC6374 Average Delay Measurement Message
+is shown below:
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |Version| Flags |  Control Code |        Message Length         |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |  QTF  |  RTF  | RPTF  |              Reserved                 |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                       Session Identifier          |    DS     |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                      Number of Packets                        |
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                      Time of First Packet                     |
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                      Time of Last Packet                      |
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    ~                                                               ~
+    ~                           TLV Block                           ~
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+{: #FIGAD title="Average Delay Measurement Message Format"}
+
+The Version, Flags, Control Code, Message Length, QTF, RTF, RPTF,
+Session Identifier, and DS Fields are as defined in section 3.7
+of RFC6374. The remaining fields are as follows:
+
+    o Number of Packets is the number of packets in this batch.
+
+    o Time of First Packet is the time of arrival of the first
+      packet in the batch.
+
+    o Time of Last Packet is the time of arrival of the last
+      packet in the batch.
+
+    o Maximum Delay is the maximum inter-packet gap observed during
+      the batch in the time format specified in the RTF field.
+
+This RFC6374 message is carried over an LSP in the way described in
+{{RFC6374}} and over an LSP with an SFL as described in {{RFC6374SFL}}
+
+
+# Sampled Measurement
+
+In the discussion so far it has been assumed that we would measure
+the delay characteristics of every packet in a delay measurement
+interval defined by an SL of constant colour.
+In {{I-D.ietf-ippm-alt-mark}} the concept of a sampled
+measurement is considered. That is the Responder only measures a packet
+at the start of a group of packets being marked for delay measurement
+by a particular colour, rather than every packet in the marked batch.
+A measurement
+interval is not defined by the duration of a marked batch of packets
+but the interval between a pair of RFC6374 packets taking a readout
+of the delay characteristic. This approach has the advantage that
+the measurement is not impacted by ECMP effects.
 
 # Carrying RFC6374 Packets over an LSP using an SFL {#RFC6374SFL}
 
