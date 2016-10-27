@@ -357,7 +357,7 @@ In this method, provision is made for reporting the following delay
 characteristics:
 
 1. Number of packets in the batch (n).
-2. Total time for the batch (S)
+2. Sum of delays in a batch (S)
 3. Maximum Delay.
 4. Minimum Delay.
 5. Sum of squares of Inter-packet delay (SS).
@@ -407,7 +407,7 @@ is shown below:
     |                      Number of Packets                        |
     |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                   Total Time for Batch                        |
+    |                   Sum of Delays for Batch                     |
     |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                       Minimum Delay                           |
@@ -430,7 +430,7 @@ of RFC6374. The remaining fields are as follows:
 
     o Number of Packets is the number of packets in this batch
 
-    o Total Time for Batch is the duration of the batch in the
+    o Sum of Delays for Batch is the duration of the batch in the
       time measurement format specified in the RTF field.
 
     o Minimum Delay is the minimum inter-packet gap observed during
@@ -477,6 +477,10 @@ is shown below:
     |                      Time of Last Packet                      |
     |                                                               |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                   Sum of Timestamps of Batch                  |
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    
     ~                                                               ~
     ~                           TLV Block                           ~
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -493,9 +497,8 @@ of RFC6374. The remaining fields are as follows:
 
     o Time of Last Packet is the time of arrival of the last
       packet in the batch.
-
-    o Maximum Delay is the maximum inter-packet gap observed during
-      the batch in the time format specified in the RTF field.
+      
+    o Sum of Timestamps of Batch. 
 
 This RFC6374 message is carried over an LSP in the way described in
 {{RFC6374}} and over an LSP with an SFL as described in {{RFC6374SFL}}
