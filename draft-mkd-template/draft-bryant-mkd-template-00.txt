@@ -1,0 +1,336 @@
+
+
+
+
+No Working Group                                               S. Bryant
+Internet-Draft                                                    Huawei
+Intended status: Informational                                 A. Author
+Expires: July 23, 2017                                 Their Affiliation
+                                                        January 19, 2017
+
+
+                              MKD template
+                      draft-bryant-mkd-template-00
+
+Abstract
+
+   This is an abstract abstract
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at http://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on July 23, 2017.
+
+Copyright Notice
+
+   Copyright (c) 2017 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (http://trustee.ietf.org/license-info) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+
+
+
+
+
+Bryant & Author           Expires July 23, 2017                 [Page 1]
+
+Internet-Draft                 RFC6374-SFL                  January 2017
+
+
+Table of Contents
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Requirements Language . . . . . . . . . . . . . . . . . . . .   2
+   3.  A section . . . . . . . . . . . . . . . . . . . . . . . . . .   2
+     3.1.  A sub-section . . . . . . . . . . . . . . . . . . . . . .   2
+   4.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .   5
+   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   5
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
+     6.1.  Allocation of PW Associated Channel Type  . . . . . . . .   5
+   7.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   6
+     7.1.  Normative References  . . . . . . . . . . . . . . . . . .   6
+     7.2.  Informative References  . . . . . . . . . . . . . . . . .   6
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
+
+1.  Introduction
+
+   [I-D.bryant-mpls-sfl-control] is used in this introduction
+
+   List example:
+
+   1.  Item one etc etc
+
+   2.  Item two etc etc
+
+   More text
+
+2.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   [RFC2119].
+
+3.  A section
+
+   Text in a section
+
+3.1.  A sub-section
+
+   Text in a sub section
+
+   The figure is illustrated in Figure 1 below:
+
+
+
+
+
+
+
+
+Bryant & Author           Expires July 23, 2017                 [Page 2]
+
+Internet-Draft                 RFC6374-SFL                  January 2017
+
+
+   (1) AAAAAAAAAABBBBBBBBBBAAAAAAAAAABBBBBBBBBB
+
+    SFL Marking of a packet batch for loss measurement
+
+   (2) AADDDDAAAABBBBBBBBBBAAAAAAAAAABBBBBBBBBB
+
+    SFL Marking of a subset if the packets for delay
+
+   (3) AAAAAAAADDDDBBBBBBBBAAAAAAAAAABBBBBBBBBB
+
+    SFL Marking of a subset of the packets across a
+    packet loss measurement boundary
+
+   (4) AACDCDCDAABBBBBBBBBBAAAAAAAAAABBBBBBBBBB
+
+    The case of multiple delay measurements within
+    a packet loss measurement
+
+                  Figure 1: RFC6734 Query Packet with SFL
+
+   The packet format of an RFC6374 Bucket Jitter Measurement Message is
+   shown below:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bryant & Author           Expires July 23, 2017                 [Page 3]
+
+Internet-Draft                 RFC6374-SFL                  January 2017
+
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |Version| Flags |  Control Code |        Message Length         |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  QTF  |  RTF  | RPTF  |              Reserved                 |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       Session Identifier          |    DS     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | Number of     |      Reserved                                 |
+   | Buckets       |                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                   Interval in 10ns units                      |
+   |                                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                   Number pkts in Bucket                       |
+   |                                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ~                                                               ~
+   ~                                                               ~
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ~                                                               ~
+   ~                           TLV Block                           ~
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+            Figure 2: Bucket Jitter Measurement Message Format
+
+   Putting in a simple equation
+
+   var = (SS - S*S/n)/(n-1)
+
+   There is some concern etc etc
+
+   Another figure example:
+
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |    Type       |    Length     |MBZ| SFL Batch |    SFL Index  |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                 SFL                   |        Reserved       |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                 FEC                                           |
+   .                                                               .
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                             Figure 3: SFL TLV
+
+
+
+
+Bryant & Author           Expires July 23, 2017                 [Page 4]
+
+Internet-Draft                 RFC6374-SFL                  January 2017
+
+
+   Where:
+
+   Type      Type is set to Synonymous Flow Label (SFL-TLV).
+
+   Length    The length of the TLV as specified in RFC6374.
+
+   MBZ       MUST be sent as zero and ignored on receive.
+
+   SFL Batch The SFL batch that this SFL was allocated as part
+             of see [I-D.bryant-mpls-sfl-control]
+
+   SPL Index The index into the list of SFLs that were assigned
+             against the FEC that corresponds to the SFL.
+
+   SFL       The SFL used to deliver this packet.  This is an MPLS
+             label which is a component of a label stack entry as
+             defined in Section 2.1 of [RFC3032].
+
+   Reserved  MUST be sent as zero and ignored on receive.
+
+   FEC       The Forwarding Equivalence Class that was used to
+             request this SFL.  This is encoded as per
+             Section 3.4.1 of TBD
+
+4.  Privacy Considerations
+
+   Privacy text
+
+5.  Security Considerations
+
+   Security Text
+
+6.  IANA Considerations
+
+6.1.  Allocation of PW Associated Channel Type
+
+   For example:
+
+   As per the IANA considerations in, IANA is requested to allocate the
+   following Channel Type in the "PW Associated Channel Type" registry:
+
+   Value  Description                    TLV Follows  Reference
+   -----  -----------------------------  -----------  ---------
+   TBD    Description MPLS Multi-Packet  No           This
+          Delay Measurement
+
+
+
+
+
+
+Bryant & Author           Expires July 23, 2017                 [Page 5]
+
+Internet-Draft                 RFC6374-SFL                  January 2017
+
+
+7.  References
+
+7.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <http://www.rfc-editor.org/info/rfc2119>.
+
+7.2.  Informative References
+
+   [I-D.bryant-mpls-sfl-control]
+              Bryant, S., Swallow, G., and S. Sivabalan, "A Control
+              Protocol for Synonymous Flow Labels", draft-bryant-mpls-
+              sfl-control-00 (work in progress), March 2015.
+
+Authors' Addresses
+
+   Stewart Bryant
+   Huawei
+
+   Email: stewart.bryant@gmail.com
+
+
+   Another Author
+   Their Affiliation
+
+   Email: a.author@example.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bryant & Author           Expires July 23, 2017                 [Page 6]

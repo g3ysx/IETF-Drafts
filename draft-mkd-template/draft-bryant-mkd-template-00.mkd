@@ -1,0 +1,191 @@
+---
+coding: utf-8
+
+title: MKD template
+abbrev: RFC6374-SFL
+docname: draft-bryant-mkd-template-00
+wg: No Working Group
+category: info
+
+stand_alone: yes
+pi: [toc, sortrefs, symrefs, comments]
+
+author:
+  -
+       ins: S. Bryant
+       name: Stewart Bryant
+       org: Huawei
+       email: stewart.bryant@gmail.com
+  -
+       ins: A. Author
+       name: Another Author
+       org: Their Affiliation
+       email: a.author@example.com
+
+
+normative:
+  RFC2119:
+
+informative:
+  I-D.bryant-mpls-sfl-control:
+  
+--- abstract
+
+This is an abstract abstract
+
+--- middle
+
+# Introduction
+
+{{I-D.bryant-mpls-sfl-control}} is used in this introduction
+
+List example:
+
+1. Item  one etc etc
+
+2. Item two etc etc
+
+More text
+
+# Requirements Language
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in
+{{RFC2119}}.
+
+# A section
+
+Text in a section
+
+## A sub-section
+
+Text in a sub section
+
+
+The figure is illustrated in {{FIGDM}} below:
+
+
+    (1) AAAAAAAAAABBBBBBBBBBAAAAAAAAAABBBBBBBBBB
+
+     SFL Marking of a packet batch for loss measurement
+
+    (2) AADDDDAAAABBBBBBBBBBAAAAAAAAAABBBBBBBBBB
+
+     SFL Marking of a subset if the packets for delay
+
+    (3) AAAAAAAADDDDBBBBBBBBAAAAAAAAAABBBBBBBBBB
+
+     SFL Marking of a subset of the packets across a
+     packet loss measurement boundary
+
+    (4) AACDCDCDAABBBBBBBBBBAAAAAAAAAABBBBBBBBBB
+
+     The case of multiple delay measurements within
+     a packet loss measurement
+{: #FIGDM title="RFC6734 Query Packet with SFL"}
+
+
+The packet format of an RFC6374 Bucket Jitter Measurement Message
+is shown below:
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |Version| Flags |  Control Code |        Message Length         |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |  QTF  |  RTF  | RPTF  |              Reserved                 |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                       Session Identifier          |    DS     |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    | Number of     |      Reserved                                 |
+    | Buckets       |                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                   Interval in 10ns units                      |
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                   Number pkts in Bucket                       |
+    |                                                               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    ~                                                               ~
+    ~                                                               ~
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    ~                                                               ~
+    ~                           TLV Block                           ~
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+{: #FIGBucket title="Bucket Jitter Measurement Message Format"}
+
+
+Putting in a simple equation
+
+    var = (SS - S*S/n)/(n-1) 
+
+There is some concern etc etc
+
+Another figure example:
+
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |    Type       |    Length     |MBZ| SFL Batch |    SFL Index  |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                 SFL                   |        Reserved       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                 FEC                                           |
+    .                                                               .
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+{: #Figure2 title="SFL TLV"}
+
+Where:
+
+    Type      Type is set to Synonymous Flow Label (SFL-TLV).
+
+    Length    The length of the TLV as specified in RFC6374.
+
+    MBZ       MUST be sent as zero and ignored on receive.
+
+    SFL Batch The SFL batch that this SFL was allocated as part
+              of see [I-D.bryant-mpls-sfl-control]
+
+    SPL Index The index into the list of SFLs that were assigned
+              against the FEC that corresponds to the SFL.
+
+    SFL       The SFL used to deliver this packet.  This is an MPLS
+              label which is a component of a label stack entry as
+              defined in Section 2.1 of [RFC3032].
+
+    Reserved  MUST be sent as zero and ignored on receive.
+
+    FEC       The Forwarding Equivalence Class that was used to
+              request this SFL.  This is encoded as per
+              Section 3.4.1 of TBD
+
+
+
+# Privacy Considerations
+
+Privacy text
+
+# Security Considerations
+
+Security Text
+
+# IANA Considerations
+
+## Allocation of PW Associated Channel Type
+
+For example:
+
+As per the IANA considerations in, IANA is requested to
+allocate the following Channel Type in the "PW Associated Channel Type"
+registry:
+
+    Value  Description                    TLV Follows  Reference
+    -----  -----------------------------  -----------  ---------
+    TBD    Description MPLS Multi-Packet  No           This 
+           Delay Measurement
+
+
+
+
