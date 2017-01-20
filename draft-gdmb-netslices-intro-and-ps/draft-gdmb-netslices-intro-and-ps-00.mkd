@@ -1,0 +1,368 @@
+---
+coding: utf-8
+
+title: Network Slicing - Introductory Document and Revised Problem Statement 
+abbrev: NS Intro and PS
+docname: draft-gdmb-netslices-intro-and-ps-00
+wg: No Working Group
+category: info
+
+stand_alone: yes
+pi: [toc, sortrefs, symrefs, comments]
+
+author:
+  -
+       ins: A. Galis
+       name: Alex Galis
+       org: University College London
+       email: a.galis@ucl.ac.uk
+  -
+       ins: J. Dong
+       name: Jie Dong
+       org: Huawei Technologies
+       email: jie.dong@huawei.com
+  -
+       ins: K. Makhijani
+       name: Kiran Makhijani
+       org: Huawei Technologies
+       email: kiran.makhijani@huawei.com
+  -
+       ins: S. Bryant
+       name: Stewart Bryant
+       org: Huawei Technologies
+       email: stewart.bryant@gmail.com
+
+normative:
+  RFC2119:
+  RFC4364:
+  I-D.dong-network-slicing-problem-statement:
+  I-D.galis-anima-autonomic-slice-networking:
+  I-D.leeking-actn-problem-statement:
+  IETF-Slicing1:
+    target: https://www.dropbox.com/s/ax2ofdwygjema8z/0-Network%20Slicing%20Side%20Meeting%20Introduction_IETF97.pdf 
+    title: Presentations - Network Slicing meeting at IETF 97 of 15th November 2016
+  IETF-Slicing2:
+    target: https://www.dropbox.com/s/k2or6sd0ddzrc6c/1-Network%20Slicing%20Problem%20Statement_IETF97.pdf
+    title: Presentations - Network Slicing meeting at IETF 97 of 15th November 2016
+  IETF-Slicing3:
+    target: https://www.dropbox.com/s/g8zvfvbrtkysjs1/2-Autonomic%20Slice%20Networking_IETF97.pdf
+    title: Presentations - Network Slicing meeting at IETF 97 of 15th November 2016
+  IETF-Slicing4:
+    target: https://www.dropbox.com/s/d3rk4pjeg552ilv/3-Architecture%20for%20delivering%20multicast%20mobility%20services%20using%20network%20slicing_IETF97.pdf
+    title: Presentations - Network Slicing meeting at IETF 97 of 15th November 2016
+  IETF-Slicing5:
+    target: https://www.dropbox.com/s/e3isn1bxwwhaw8g/4-ACTN%20and%20network%20slicing_IETF97.pdf
+    title: Presentations - Network Slicing meeting at IETF 97 of 15th November 2016
+
+informative:
+  IMT2020-2015:
+     target: http://www.itu.int/en/ITU-T/focusgroups/imt-2020/Pages/default.aspx
+     title: Report on Gap Analysis 
+     date: December 2015
+     seriesinfo:
+       "ITU-T FG IMT2020"
+  IMT2020-2016:
+     target: http://www.itu.int/en/ITU-T/focusgroups/imt-2020/Pages/default.aspx
+     title: Draft Technical Report Application of network softwarization to IMT-2020 (O-041) 
+     date: December 2016
+     seriesinfo:
+       "ITU-T FG IMT2020"
+  MANO-2014:
+     target: http://www.etsi.org/deliver/etsi_gs/NFV-MAN/001_099/001/01.01.01_60/gs_nfv-man001v010101p.pdf
+     title:  Network Functions Virtualisation (NFV); Management and Orchestration v1.1.1.  
+     date: December 2014
+     seriesinfo:
+       "ETSI European Telecommunications Standards Institute."
+  ChinaCom-2009:
+    target: http://www.chinacom.org/2009/index.html
+    title: A. Galis et al - Management and Service-aware Networking Architectures (MANA) for Future Internet - Invited paper IEEE 2009 Fourth International Conference on Communications and Networking in China (ChinaCom09) 26-28 August 2009, Xi'an, China
+  GENI-2009:
+     target: http://groups.geni.net/geni/wiki/GENIConcepts
+     title: GENI Key Concepts - Global Environment for Network Innovations (GENI) 
+  IMT2020-2016bis:
+     target: http://www.itu.int/en/ITU-T/focusgroups/imt-2020/Pages/default.aspx
+     title: Draft Terms and definitions for IMT-2020 in ITU-T (O-040) 
+     date: December 2016
+     seriesinfo: 
+       "ITU-T FG IMT2020"
+  NGMN-2016:
+     target: https://www.ngmn.org/uploads/media/160113_Network_Slicing_v1_0.pdf
+     title: Hedmar,P., Mschner, K., et al - Description of Network Slicing Concept
+     date: January 2016
+     seriesinfo:
+       "NGMN Alliance NGS-3GPP-2016" 
+  NGS-3GPP-2016:
+     target: http://www.3gpp.org/ftp/tsg_sa/WG2_Arch/Latest_SA2_Specs/Latest_draft_S2_Specs 
+     title: Study on Architecture for Next Generation System - latest version v1.0.2 
+     date: September 2016
+  ONF-2016:
+     target: https://www.opennetworking.org/images/stories/downloads/sdn-resources/technical-reports/Applying_SDN_Architecture_to_5G_Slicing_TR-526.pdf
+     title: Paul, M, Schallen, S., Betts, M., Hood, D., Shirazipor, M., Lopes, D., Kaippallimalit, J., - Open Network Fundation document "Applying SDN Architecture to 5G Slicing
+     date: April 2016.
+     seriesinfo: 
+        "Open Network Fundation"
+  GUERZONI-2016:
+     target: onlinelibrary.eiley.com/10.1002/ett.3084/pdf
+     title: Guerzoni, R., Vaishnavi,I.,Perez-Caparros, D., Galis, A., et al Analysis of End-to-End Multi Domain Management and Orchestration Frameworks for Software Defined Infrastructures - an Architectural Survey
+     date: June 2016
+  KARL-2016:
+     target: http://onlinelibrary.wiley.com/doi/10.1002/ett.3084/full
+     title: Karl, H., Peuster, M, Galis, A., et al DevOps for Network Function Virtualization - An Architectural Approach
+     date: July 2016
+
+--- abstract
+
+This documents represents an introduction to the motivation and Network 
+Slicing problems and work ares. It represents an initial revision of 
+Network Slicing problem statement derived from the analysis of the 
+technical gaps in IETF protocols ecosystem. It complements and it bring 
+together the isolated efforts being carried out in several IETF working 
+groups to achieve certain aspects of network slice functions and operations.
+
+--- middle
+
+# Introduction
+
+Network slicing (NS) refers to the managed partitions of physical and/or 
+virtual network resources, network physical/virtual and service functions 
+that can act as an independent instance of a network and/or as a network 
+cloud. Network resources include connectivity, compute and storage 
+resources.
+
+Slices considerably transform the networking perspective by abstracting, 
+isolating, orchestrating, softwarizing and separating logical network 
+components from the underlying physical network resources and as such 
+they enhance Internet architecture.
+
+For slice creation, the management plane creates the grouping of 
+physical and virtual network resources, connects with the physical 
+and virtual network and service functions as appropriate and it instantiates 
+all the network and service functions assigned to the slice. On the other 
+hand for slice operations the slice control takes over the control and 
+governing of all the network resources, network functions and service 
+functions assigned to the slice, and (re-) configure them as appropriate 
+and as per elasticity needs in order to provide an end-to-end service.
+ 
+Network operators can exploit NS to significantly reduce operations 
+expenditures, and enable softwarization, programmability and the 
+innovation necessary to enrich the offered services. Network 
+softwarization techniques {{IMT2020-2015}}, {{IMT2020-2016}} may 
+be used to realised and manage {{MANO-2014}} network slicing. NS 
+provides the means for the network operators to provide network 
+programmable capabilities to OTT providers and other market players 
+without changing their physical infrastructure. NS enables the 
+concurrent deployment of multiple logical, self-contained and 
+independent, shared or partitioned networks on a common infrastructure. 
+Slices support also dynamic multi-services, multi-tenancy and the 
+integration means for vertical market players.
+
+The purpose of NS work in IETF is to develop a set of protocols and/or protocol 
+extensions that enable efficient slice creation, activation / deactivation, 
+composition, elasticity, orchestration, management, isolation, guaranteed 
+SLA and safe operations within a network or network cloud / data centre 
+environment that assumes an IP and/or MPLS-based underlay.
+
+While there are, isolated efforts being carried out in several IETF 
+working groups DETNET,
+{{I-D.leeking-actn-problem-statement}}, 
+{{I-D.dong-network-slicing-problem-statement}}, 
+{{I-D.galis-anima-autonomic-slice-networking}}, 
+{{IETF-Slicing1}},
+{{IETF-Slicing2}},
+{{IETF-Slicing3}},
+{{IETF-Slicing4}},
+{{IETF-Slicing5}}
+to achieve certain aspects of network slice functions and operations, there is a 
+clear need to look at complete life-cycle management characteristics of network 
+Slicing solutions though the discussions based on the following 
+architectural tenets:
+
+o Underlay tenet: support for an IP/MPLS-based underlay data plane 
+the transport network used to carry that underlay.
+
+o Governance tenet: a logically centralized authority for network 
+slices in a domain.
+
+o Separation tenet: slices are independent and have appropriate 
+degree of isolation (1) from each other.
+
+o Capability exposure tenet: each slice allows third parties to 
+access via APIs information regarding services provided by the 
+slice (e.g. connectivity information, QoS, mobility, autonomicity, 
+etc.) within the limits set by the operator.
+
+NS approaches that do not adhere to these tenets are explicitly outside 
+of the scope of the proposed work at IETF.
+
+In pursuit of the solutions described above, there is a need to document 
+an architecture for network slicing within both wide area network and 
+a data center environments.
+
+Elicitation of requirements ({{RFC2119}}, {{RFC4364}}) for a 
+network slice control and management planes and will be needed facilitating 
+the selection, extension, and/or development of the protocol for each 
+of the functional interfaces identified to support the architecture. 
+
+Additionally, documentation on the common use-cases for slice validation 
+for 5G is needed (e.g. mission-critical ultra-low latency communication 
+services; massive-connectivity machine communication services - smart metering,
+smart grid and sensor networks; extreme QoS; Independent operations and 
+management; Independent cost and/or energy optimisation; Independent 
+multi-topology routing; multi-tenant operations, etc.).
+
+The proposed NS work would be co-ordinated with other IETF WGs (e.g. 
+TEAS WG, DETNET WG, ANIMA WG, NETCONF WG, SUPA WG, NVO3 WG, Routing Area 
+WG (RTGWG), Network Management Research Group (NMRG) and NFV Research Group 
+(NFVRG)) to ensure that the commonalities and differences in solutions 
+are properly considered. Where suitable protocols, models or methods exist, 
+they will be preferred over creating new ones.
+
+## Notes
+
+(1) This issue require efficient interaction between an upper layer in 
+the hierarchy and a lower layer for QoS guaranties and most of the 
+operations on slicing.
+
+# Suggested Problems and Work Areas
+
+The goal of this work is to develop one or more protocol specifications 
+(or extensions to existing protocols) to address the following problem 
+areas. These problems were selected according to the analysis of the 
+technical gaps in IETF protocols ecosystem.
+
+o Uniform Reference Model for Network Slicing; Describe all 
+      elements and instances of a network slice. Describe shared 
+      non-sliced network parts.
+
+o Slice Templates: Design the slices to different scenarios 
+      ({{ChinaCom-2009}}, {{GENI-2009}}, {{IMT2020-2016bis}}, 
+      {{NGMN-2016}}, {{NGS-3GPP-2016}}, {{ONF-2016}}); an appropriate slice 
+      template definition that may include capability exposure of managed 
+      partitions of physical and/or virtual network resources (i.e. 
+      connectivity, compute and storage resources), physical and/or virtual 
+      network and service functions that can act as an independent network 
+      and/or as a network cloud.
+
+o Network slice expected capabilities (i.e. prioritization may be needed):
+
+        * Four-dimensional efficient slice isolation with guarantees for 
+          isolation in Data / Control / Management / Service planes. 
+          Enablers for safe and efficient multi-tenancy in slices.
+
+        * Methods to guarantee the end-to-end QoS of a slice.
+
+        * Recursion - methods for NS segmentation allowing a slicing 
+          hierarchy with parent child relationships.
+
+        * Efficiency in slicing: realize diverse requirements without 
+          re-engineering the infrastructure.
+
+        * Customized security mechanisms per slice.
+
+        * Enablers to manage the trade-offs between flexibility and 
+          efficiency in slicing.
+
+        * Optimisation - methods for network resources automatic 
+          acquisition, global resource view formed; global energy view 
+          formed; Network Slice deployed based on global resource 
+          and energy efficiency; Mapping algorithms.
+
+        * Monitoring status and behaviour of NS in a single and/or 
+          muti-domain environment.
+
+        * Capability exposure for slices; APIs for slices.
+
+        * Programmability and openness of network slices. 
+
+o Network slice operations (i.e. prioritization may be needed):
+
+        * Slice creation: slices in access, core and transport 
+          networks; slices in data centres, slices in edge clouds.
+
+        * Slice life cycle management including creation, 
+          activation/ deactivation, protection (2) , elasticity (3), 
+          extensibility (4) , safety (5) , Sizing and 
+          scalability of the slicing model per network and 
+          per network cloud.
+ 
+        * Autonomic slice management and operation (i.e. self-configuration, 
+          self-composition, self-monitoring, self-optimisation, 
+          self-elasticity are carried as part of the slice protocols).
+
+        * Slice stitching / composition: Enablers for efficient stitching / 
+          composition/ decomposition of slices:
+
+            - vertically (service + management + control planes) and/or 
+            - horizontally (between different domains part of access, 
+              core, edge segments) and /or 
+            - vertically + horizontally.
+
+        * E2E wireline network segments and network clouds orchestration 
+          of slices ([GUERZONI-2016], [KARL-2016]).
+ 
+        * Service Mapping: Dynamic Mapping of Services to slices; YANG 
+          models for slices.
+
+o Efficient enablers for Integration of above capabilities and operations.
+
+## Notes
+
+(2) Protection refers to the related mechanisms so that events within one slice, 
+such as congestion, do not have a negative impact on another slice.
+
+(3) Elasticity refers to the mechanisms and triggers for the growth /shrinking 
+of network resources, network and service functions.
+
+(4) Extensibility refers to the ability to expand a NS with additional 
+functionality and/or characteristics or through modification of existing 
+functionality/characteristics, while minimizing impact to existing functions.
+
+(5) Safety refers to the conditions of being protected against different 
+types and the consequences of failure, error harm or any other event, 
+which could be considered non-desirable.
+
+{{GUERZONI-2016}} {{KARL-2016}}
+
+# Documents 
+
+The following are the proposed / expected / resulting documents with 
+priority (I) or (II) (i.e. revised prioritization may be needed):
+
+o Agreed work plan
+
+o Slice template and reference model to IESG (Informational)
+
+o Slice life-cycle management model to IESG (Informational)
+
+o Requirements for a network slice control and management planes.
+
+o Common use-cases for slice validation for 5G
+
+o (I) Slice template and reference model.
+
+o (I) Four dimensional efficient slice isolation with guarantees for isolation in Data/ Control/ Management/ Service planes.
+
+o (II) Methods to guarantee the end-to-end QoS of a slice.
+
+o (I) YANG data model for slicing.
+
+o (I) E2E orchestration of slices.
+
+o (II) Customized security mechanisms per slice.
+
+o (I) Slice stitching / composition: enablers for efficient stitch / composition / decomposition of slices vertically, horizontally and vertically + horizontally
+
+
+# Security Considerations
+
+Security will be a major part of the design of network slicing.
+
+# IANA Considerations
+
+This document requests no IANA actions.
+
+# Acknowledgements
+
+Thanks to Sheng Jiang (Huawei Technologies) for reviewing this draft.
+
+
