@@ -1,0 +1,4 @@
+*.mkd~
+*-old*
+*~*
+.refcache
