@@ -1,0 +1,253 @@
+---
+coding: utf-8
+
+title: Network Slicing Architecture
+abbrev: Netslice arch
+docname: draft-bryant-netslice-arch
+wg: No Working Group
+category: info
+
+stand_alone: yes
+pi: [toc, sortrefs, symrefs, comments]
+
+author:
+  -
+       ins: S. Bryant
+       name: Stewart Bryant
+       org: Huawei
+       email: stewart.bryant@gmail.com
+  -
+       ins: A. Author
+       name: Another Author
+       org: Their Affiliation
+       email: a.author@example.com
+
+
+normative:
+  RFC2119:
+
+informative:
+  
+--- abstract
+
+This is an abstract abstract
+
+--- middle
+
+# Introduction 
+
+
+# Requirements Language
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in
+{{RFC2119}}.
+
+# Definition Terms
+
+# Objectives of Network Slicing
+
+In this section we provide an overview of the objectives of network slicing to 
+provide context for the network slicing architecture.
+ 
+## Service Diversity
+
+The Internet has always been designed to support a diverse set of services.
+However the aims of 5G stretch this diversity in a mumber of dimensions. 
+5G aims to provide an enhanced mobile Broaband service, providing the user with
+the network services needed to support high definition video, virtual reality
+augmented reality and tigher integration between fixed and mobile services 
+known as fixed mobile convergence (FMC). High bandwidth is not a particular 
+challenge in the Internet, but to do so with at least one of the hosts highly 
+mobile is a challange that requires technical consideration. 
+
+Some of the services that are invisioned for 5G such as vehicular control, be
+that the co-ordination of self driving cars or the control of airborne devices
+such as drone require low latency. Most Internet protocols are designed around
+a best effort, or enhanced best effort paradigm, although recent work
+on deterministic networking aims to improve the situation by providing a 
+ceiling on latency and a significant improvement in packet loss rate for
+deterministic services. The added dimension of end-point mobility to support
+5G further stretches these requirements.
+
+The Internet of things brings with it the concept of massive Machine Type 
+Communications. This results in communications device densities and population
+sizes that exceed those to which the core Internet protocols were originally
+designed to support.
+
+Economy of scale, a driver of the economic sucess of the Internet, leads 
+us in the direction of trying to ammortize the network and its infrastructure 
+across this diverse set if requirements, but the extent of the divesity is 
+such that one size does not fit all.
+
+The purpose of network slicing is to ammortize what we can, without 
+compromizing on the critical performance requirements needed by the 
+application requirements, by providing a bespoke or pseudo-bespoke 
+network to each application domain over a common infrastructure.
+
+## Guarenteed Performance
+
+There are exacting latancy demands required to service the needs
+of a number of target applications. Augmented reality for example requires
+high bandwidth to provide a local video feed to the augmenter, and high 
+quality augmented video back to the user, but it also requires low latency 
+since the user must perceive delay been their own physical actions and the 
+impact on their perceived, but artificially created reality.
+
+## Rapid Deployment
+
+Rapid deployment and the rapid introduction of new services is a development
+goal of the providers of current Internet service providers of all types.
+There is ongoing work such as network orchestration, software defined networks
+and network function virtualization that aims to address this in fixed networks.
+A mobile network has the additional challange of providing the required
+radio systems and their associated infrastructure. Whether the develpement
+work being persued to address rapid deployment of fixed network services is
+sufficient to address the needs of the mobile network or whether the 
+addition of mobility requires additional development of the techiques being
+used to address this problem in the fixed network space is for further study. 
+
+## Resource Multiplexing and Isolation
+
+The key to the economic success of the Internet is the ammortization
+of cost over a diverse set of users and a diverse set of user applications
+each with diferent network requirements. The need for varying degress
+of both static and dynamic isolation demanded by the proposed applications
+of 5G suggests that whilst some of these needs may be met by the existing
+techniques that have been developed over the years, such as VPNs, these
+techniques will require enhancement to satisfy the requirements of some of the 
+proposed 5G applications, not the least of which is mobility.
+
+## Automation
+
+
+
+## Buiness Model
+
+It is anticipated that 5G operation will involve new business models, with
+low overhead fast provisioning of new services. Whilst a number of additional
+components will need to be provisioned, this is not substantially different
+to a longstanding goal with fixed networks. This whilst this needs to be
+placed in the architecture, and interfaces to new components will be needed no
+fundamentally new work is anticipated.
+
+
+## Fixed-Mobile Convergence
+
+# Objectives of this Architecture
+
+## Common Infrastructure
+## On-demand Customization
+## Issolation
+## Determinism
+## Scalability
+## OAM Exposure
+## Multi-operator
+
+# Structure of the Architecture
+
+## End-to-end Data Path
+
+
+
+## End-to-end Data Path Support
+
+## Per-Slice resources
+
+## Provisioning of the Per-Slice Resources
+
+## Management of the Per-Slice Resources
+
+## High Level Customer Interface
+
+# The Network Slicing Concept
+
+
+
+# The Data-Plane
+
+The data-plane in the edge and core of the network will be one or more of the 
+standard IETF data-planes: IPv4/6 or MPLS or possibly for multicast it might 
+be BIER. Over the RAN however, where there is concern by some radio engineers
+at the relative bloat of the IETF protocol layers. This may mean that a 
+gateway function is needed for at least some of the layers in the protocol 
+stack. We proceed with this architecture on the basis that the IETF protocol
+stack exists as-is and any translation to and from the air interface is the
+province of the radio engineers.
+
+## Propagation of Guarantees
+
+Guarantees of delay start at the physical layer and propagate up the 
+stack layer by layer. Any layer can add delay, and can take various steps
+to minimise the impact of delay on its layer, but no layer can reduce the
+delay introduced by a lower layer.
+
+Guarantees of loss and jitter can, by contrast be upheld or improved
+at any layer of the protocol stack, but usually at a cost of increased 
+delay. Where delay is a constrain as it is in some 5G applications the option
+of trading trading delay for better loss or jitter characteristics is not an
+option. In these circumstances it is critical that the quality characteristics
+start at the phy later and be maintained at each layer of the protccol stack.
+
+## The Underlying Phy
+
+A point to point dedicated physical channel is clearly provides the will
+provide delay, jitter and loss characteristics limited only by the 
+media itself. This does not fulfil the need for rapid reconfiguration
+of the network to provision new services. 
+
+To address the need to provision a slice of the data-plane one approach that
+can be deployed is to time-slice access to the physical service. 
+Ignoring many of the classic TDM ofering as being too slow, a number of 
+technologies are available that might be applied including OTN and FlexE.
+Whilst the provisioning of the channel provided by underlays such as
+FlexE and the interconenction of FlexE channels is within the scope of 
+this architecture the operation of the underlay is outside its scope.
+
+The logical sub-divsion of a physical channel be that a single channel with
+the full bandwidth available or a channel multiplexed at the physical layer
+such as is provided by FlexE we will consider in the following section.
+
+## Logical Multiplexing of Physical Channels
+
+## The Role of VPNs
+
+## The Role of Determinstic Networking
+
+## Hard vs Soft Slicing in the data-plane
+
+## Dynamic Reprovisioning
+
+# OAM
+
+# The Network Layer Control Plane
+
+## Distributed Control Planes
+
+## SDN
+
+# Service Functions
+
+# The Transport Layer
+
+# Provisioning
+
+# Life-cycle Management
+
+
+# Privacy Considerations
+
+Privacy text
+
+# Security Considerations
+
+Security Text
+
+# IANA Considerations
+
+This document makes no IANA requests. 
+
+
+
+
