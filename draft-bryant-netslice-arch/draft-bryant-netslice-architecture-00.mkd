@@ -1,0 +1,590 @@
+---
+coding: utf-8
+
+title: Network Slicing Architecture
+abbrev: Netslice arch
+docname: draft-bryant-netslice-architecture-00
+wg: Network Working Group
+category: info
+
+stand_alone: yes
+pi: [toc, sortrefs, symrefs, comments]
+
+author:
+  -
+       ins: S. Bryant
+       name: Stewart Bryant
+       org: Huawei Technologies
+       email: stewart.bryant@gmail.com
+  -
+       ins: J. Dong
+       name: Jie Dong
+       org: Huawei Technologies
+       email: jie.dong@huawei.com
+
+
+normative:
+  RFC2119:
+
+informative:
+  
+--- abstract
+
+This document defines the IETF architecture of network slicing.
+Where possible this is based on existing IETF protocols and
+IETF protocols under development.
+
+Network slicing is a method whereby a customer buys the use
+of an isolated network with communications and compute resource dedicated
+to their own needs, where this is a virtual network which is
+part of a larger network that is shared amongst many such customers.
+A network slice is further characterised by the ability of the 
+customer to modify their requirements on the fly and have their
+network slice dynamically and automatially re-provisioned to meet
+their current needs.
+
+--- middle
+
+# Introduction 
+
+This document defines the IETF architecture of network slicing.
+It is written from the perspective of the network provides
+connectivity and services to the 5G Radio Area Network (RAN).
+
+Network slicing is a method whereby a customer buys the use
+of an isolated network with communications and compute resource dedicated
+to their own needs, where this is a virtual network which is
+part of a larger network that is shared amongst many such customers.
+A network slice is further characterised by the ability of the 
+customer to modify their requirements on the fly and have their
+network slice dynamically and automatially re-provisioned to meet
+their current needs.
+
+Where possible existing IETF protocols are used. Where 
+there is a need to enhance those protocols, or where new protocols
+are required these are (will be) identified.
+
+
+# Requirements Language
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in
+{{RFC2119}}.
+
+# Definition Terms
+
+# Objectives of Network Slicing
+
+This section provides an overview of the objectives of network slicing to 
+provide context for the network slicing architecture.
+ 
+## Service Diversity
+
+The Internet has always been designed to support a diverse set of
+services.  However the aims of 5G stretch this diversity in a number
+of dimensions. 5G aims to provide an enhanced mobile Broadband (eMBB)
+service, providing the user with the network services needed to
+support high definition (HD) video, virtual reality (VR), augmented
+reality (AR) and tighter integration between fixed and mobile
+services known as fixed mobile convergence (FMC).  High bandwidth is
+not a particular challenge in the Internet, although guaranteed on-
+demand high bandwidth is more of a challenge.  In addition, providing
+high bandwidth with low packet loss with at least one of the hosts
+highly mobile is a challenge that requires technical consideration.
+
+Some of the services that are envisioned for 5G such as vehicular
+control, be that the co-ordination of self driving cars or the
+control of airborne devices such as drones falls into the Ultra-
+Reliable and Low Latency Communications (uRLLC) service type.  Most
+Internet protocols are designed around a best effort, or enhanced
+best effort paradigm, although recent work on deterministic
+networking aims to improve the situation by providing a ceiling on
+latency and a significant improvement in packet loss rate for
+deterministic services.  Two considerations make this achieving end-
+to-end low latency especially challenging, firstly the air (radio)
+interface takes a large fraction of the latency budget, leaving
+little latency budget for the transport network, which in turn has
+stringent latency requirements placed on it.  Secondly the added
+dimension of end-point mobility to support 5G further stretches these
+requirements.
+
+The Internet of things brings with it the concept of massive Machine Type 
+Communications (mMTC). This results in communications device densities and population
+sizes that exceed those to which the core Internet protocols were originally
+designed to support.
+
+Economy of scale, a driver of the economic success of the Internet, leads 
+us in the direction of trying to amortized the network and its infrastructure 
+across this diverse set of requirements, but the extent of the diversity is 
+such that one size does not fit all.
+
+The purpose of network slicing is to amortized as much we can, without 
+compromising on the critical performance requirements needed by the 
+application requirements, by providing a bespoke or pseudo-bespoke 
+network to each application domain over a common infrastructure (network
+compute and storage).
+
+## Guaranteed Performance
+
+There are exacting latency demands required to service the needs
+of a number of target applications. 
+As an example, augmented reality, which has professional applications, requires
+high bandwidth to provide a local video feed to the augmenter, and high 
+quality augmented video back to the user, but it also requires low latency 
+since the user must perceive delay been their own physical actions and the 
+impact on their perceived, but artificially created reality. Another example
+is the vehicular communications where the communications traffic interfaces to
+the vehicle control system and may have a direct bearing on road safety.
+
+## Rapid Deployment
+
+Rapid deployment and the rapid introduction of new services is a
+development goal of the providers of all types of current Internet
+service, and it becomes more important when various service of
+vertical industries in 5G will be deployed in the network.  There is
+ongoing work such as network orchestration, software defined networks
+and network function vitalization that aims to address this in fixed
+networks.  Whether the development work being pursued to address
+rapid deployment of fixed network services is sufficient to address
+the new services requirement of 5G is for further study.
+
+## Resource Multiplexing and Isolation
+
+The key to the economic success of the Internet is the amortization
+of cost over a diverse set of users and a diverse set of user
+applications each with different network requirements.  The need for
+varying degrees of isolation demanded by the 5G applications suggests
+that whilst some of these needs may be met by the existing techniques
+that have been developed over the years, such as VPNs, these
+techniques will require enhancement to satisfy the requirements of
+some of the proposed 5G applications.  For example, industrial
+control and car control applications have both operational
+correctness and safety concerns which introduce requirements for
+greater isolation (static and dynamic) on the design of the network.
+
+Achieving the correct balance between multiplexing and isolation is
+important in  meeting both the service requirements and the need for network
+operational efficiency.
+
+
+## Automation
+
+There are two aspects of automation that require consideration, the problem
+of network planning and operation, and the problem of run-time operation.
+
+The modern desire is for the configuration of the network to be driven
+by those familiar with web tools rather than those familiar with
+the detail of network configuration, and thus for there to be a
+seamless interface from those processing customer orders through to
+the deployment of service to the customers. Economics drive this need
+in "ordinary" networking. Network slicing enhances the need for this
+in several dimensions, firstly the frequency of reconfiguration
+is expected to grow as customers buy capacity and other capabilities
+in smaller increments for shorter periods of time. Secondly the 
+number of sub-networks is expected to grow. Thirdly the complexity
+of the characteristics of the network will grow with the addition
+of demand for resources dedicated to the customer. Clearly the 
+new characteristics such as the concept of the slice itself with its
+dedicated resources will demand enhancements to the system that
+plans, provisions and configures the network will require enhancements
+to the automation of the network. The increased scale of the network
+and the rate of change of the configuration are likely more demanding
+than is needed to support existing networks. Whether these changes
+are fundamental or require a re-think of the existing approach is for 
+further study, but fundamentally is more of a design and implementation
+issue than an architectural change.
+
+In terms of the run-time operation of the network there is already
+a strong desire to automate this. The issue with network slicing is
+a matter of scale, and the degree to which faults in the underlay
+are propagated up to the system operating the slice, and the manner
+in which this happens.
+
+
+## Business Model
+
+It is anticipated that 5G operation will involve new business models, with
+low overhead fast provisioning of new services. This is also the trajectory
+of fixed networks. Whilst 5G networks will have some specialist components
+it would be advantageous if common customer interfaces, provisioning and
+management systems evolved.
+
+
+## Fixed-Mobile Convergence
+
+The network architectures of fixed and mobile networks as currently
+deployed are quite different. For example voice and data are
+handled differently, billing, detailed usage records and the regulatory
+framework for thing such as lawful intercept are quite different.
+The goal is that that a common technical infrastructure can satisfy the 
+needs of both fixed network usage and mobile network usage from 
+both and application and delivery perspective.
+
+# The Network Slicing Concept
+
+The network slicing concept is that a network slice provider has
+network resource, compute resources and storage resources can
+allocate a portion of these to build a logical dedicated network for
+each customer, so that the diverse requirements of different
+customers can be met in the same physical network.  Allocation is
+temporary and can be increased or decreased at any time according to
+the requirements of the customer to whom they are allocated.  Thus
+the network is sliced up into separate network slice instances
+(NSIs).
+
+From the perspective of a network slice instance (NSI), the underlay 
+is thus a reservoir of the network, compute and storage resources, 
+some fraction of which are temporarily allocated  to the NSI.
+The compute and storage resources include the resources present
+on the routers used by the NSI as well as such resources used by
+network functions, SDN controllers, telemetry systems etc.
+
+The critical difference between slicing and existing virtualization
+concepts is that in network slicing the shared resources can be
+allocated in such a way that they are dedicated to the service of the
+customer buying the use of the NSI, so that different services can
+always obtain their required network characteristics with the network
+slice without being impacted by other services in the network.
+
+
+## An Example of Network Slicing
+
+In this section we expand on the concept of network slicing a little further.
+
+    NSI 1
+    A-----X----Y------SF1-----SF2-------B
+               |
+               Z------SF3---------------C
+
+    NSI 2
+    D-----X----Y------SF1-----SF4-------E
+               |
+               Z------SF3---------------F
+{: #NSE title="Example of Network Slicing"}
+
+
+{{NSE}} shows two network slice instances. In one NSI A, B and C
+are edge nodes in the network and exchange traffic through
+routers X, Y and Z. Some of this traffic is subject to in network
+processing through service functions SF1, SF2 and SF3. In 
+the other NSI nodes D, E and F are edge nodes in the network
+and exchange traffic through nodes X, Y and Z. Some of this traffic
+is subject to in network processing through service functions
+SF1, SF4 and SF3. 
+
+Each group of ingress/egress nodes: A, B and C and D, E and F think they are in
+disjoint networks from the other group. There is no test that they
+can perform that will indicate otherwise. However X, Y and Z and
+the links joining them are the same nodes and links. Furthermore
+X, Y and Z are unaware of their alter ego, and run ships in the night
+routing and other protocols.
+
+Similarly
+Each instance of SF1 and SF3 is executing the same service functions operating on the same
+hardware, but neither instance of SF1 and SF3 is aware of the other.
+Similarly SF2 and SF4 may execute on the same hardware but neither
+is aware of the other and is unable to detect the presence of the 
+other.
+
+A, B and C, and D, E and F have different slices of the network, in 
+a technology know as Network Slicing.
+
+Where neither group is able to run any test (static or dynamic) to determine
+the presence of the other group this is hard network slicing. In a hard
+network slice each network slice is granted network and computing resources
+that are private to it for its exclusive use. There can be no amortization
+of resources, and no over provisioning other than withing the slice for use
+by the slice. The users of the slice pay the full overhead costs of the 
+resources they buy from the network slice provider.
+
+An alternative model, much more akin to Virtual Private Networks is 
+soft network slicing, where the typologies are isolated from the point
+of view of not being able to exchange information between each other, but
+they share resources in a way that does not provide full dynamic isolation.
+Thus if one party consumes excess link bandwidth, excess compute resource, or
+their routers need to perform a lot of resources dues to a network action, the
+slices sharing those resources will experience a reduction in capacity. 
+With soft network slicing over provisioning may be utilized allowing better
+amortization of costs among st the users and hence lower operating costs.
+
+It is fundamental to network slicing that slices may be created, the 
+topology and/or its resources modified, and that the slices may be 
+decommissioned in
+a timely manner with minimum work by the network provider or the customer.
+This is not however unique to network slicing, it is a goal of 
+modern classical networks to be able to do this.
+
+# Network Slicing Architecture
+
+This section describes the overall architecture of network slicing in
+the fixed transport network.  Note that the end-to-end 5G network
+slicing consists of the slicing of the radio network, the fixed
+transport network and the mobile core network, while the slicing of
+radio network and mobile core are out of the scope of this document.
+
+                           +---------------------+
+                           |     Third Party     |
+                           +----------+----------+
+                                      |
+                          +-----------+------------+
+                          |    E2E Slice Manager   |
+                          +-/-------------------\--+
+                           /                     \
+                          /                       \
+        +----------------/-----+             +-----\----------------+
+        | Domain Slice Manager |<----------->| Domain Slice Manager |
+        +--------+-+-+---------+             +-------+-+-+----------+
+                 | | |                               | | |
+           +-----|-|-+------------+           +------|-|-+----------+
+        +--+-----|-+-----------+  |        +--+------|-+----------+ |
+     +--+--+-----+----------+  |  |     +--+--+------+---------+  | |
+     |                      |  +--+     |                      |  +-+
+     |                      +--+        |                      +--+
+     | Logical Network Slice|           | Logical Network Slice|
+     +----------------------+           +----------------------+
+    +-------------------------------+    +-------------------------------+
+    |      +---+       +---+        |    |    +---+   +---+   +---+      |
+    |      |   |       |   |        |    |    |   |   |   |   |   |      |
+    |      +---+       +---+        |    |    +---+   +---+   +---+      |
+    |                               |    |                               |
+    | +---+  +---+  +---+  +---+    |    | +---+  +---+  +---+  +---+    |
+    | |   |  |   |  |   |  |   |    |    | |   |  |   |  |   |  |   |    |
+    | +---+  +---+  +---+  +---+    |    | +---+  +---+  +---+  +---+    |
+    |                               |    |                               |
+    |Physical Network Infrastructure|    |Physical Network Infrastructure|
+    +-------------------------------+    +-------------------------------+
+{: #NSA title="Network Slicing Architecture"}
+
+{{NSA}} shows the high level network slicing architecture.
+It consists of several components: Third Party, E2E Slice
+Manager, Domain Slice Manager, logical network slices and the
+physical network infrastructure.
+
+## Third Party
+
+The third party is the customer of the network slice, which provides
+the requirements of the network slice to the slice manager.  It can
+be either the user of the network slice, or a particular service
+provider which provide it own services based on the network slices.
+
+## Slice Manager
+
+Slice manager is responsible for the life cycle management of the
+network slices.  It creates, updates and decommission the network
+slice according to the requirement from the third party.  In multi-
+domain networks, each domain can have a Domain Slice Manager, and an
+E2E slice manager would coordinate the domain slice managers to build
+an E2E network slice.
+
+## Logical Network Slices
+
+A logical network slice provides the customized virtual network topology 
+and required connectivity between a set of network sites and a set of 
+service and network functions. It forms a customized logical network 
+for a particular customer or service. 
+
+## Physical Network Infrastructure
+
+All the network slices share the resources in the physical network 
+infrastructure. The performance characteristics (such as bandwidth, 
+latency, jitter, reliability) of a particular network slice is 
+guaranteed by allocating appropriate physical network resources to 
+the logical network slice. The physical network may support different 
+methods of network resource partitioning, which may be used to provide 
+different types of network slicing. 
+
+
+# Data-Plane
+
+The data-plane in the edge and core of the network will be one or more of the 
+standard IETF data-planes: IPv4/6 or MPLS or possibly for multi-cast it might 
+be BIER. Over the RAN however, where there is concern by some radio engineers
+at the relative bloat of the IETF protocol layers. This may mean that a 
+gateway function is needed for at least some of the layers in the protocol 
+stack. We proceed with this architecture on the basis that the IETF protocol
+stack exists as-is and any translation to and from the air interface is the
+province of the radio engineers.
+
+## Propagation of Guarantees
+
+Guarantees of delay start at the physical layer and propagate up the 
+stack layer by layer. Any layer can add delay, and can take various steps
+to minimize the impact of delay on its layer, but no layer can reduce the
+delay introduced by a lower layer.
+
+Guarantees of loss and jitter can, by contrast be upheld or improved
+at any layer of the protocol stack, but usually at a cost of increased 
+delay. Where delay is a constrain as it is in some 5G applications the option
+of trading trading delay for better loss or jitter characteristics is not an
+option. In these circumstances it is critical that the quality characteristics
+start at the physical layer and be maintained at each layer of the protocol
+stack.
+
+## The Underlying Physical Layer
+
+A point to point dedicated physical channel is clearly provides the will
+provide delay, jitter and loss characteristics limited only by the 
+media itself. This does not fulfill the need for rapid reconfiguration
+of the network to provision new services. 
+
+To address the need to provision a slice of the data-plane one approach that
+can be deployed is to time-slice access to the physical service. 
+Ignoring many of the classic TDM offering as being too slow, a number of 
+technologies are available that might be applied including OTN and FlexE.
+Whilst the provisioning of the channel provided by underlays such as
+FlexE and the interconnection of FlexE channels is within the scope of 
+this architecture the operation of the underlay is outside its scope.
+
+The logical sub-division of a physical channel be that a single channel with
+the full bandwidth available or a channel multiplexed at the physical layer
+such as is provided by FlexE we will consider in the following section.
+
+## Hard vs Soft Slicing in the Data-Plane
+
+Hard slicing refers to the provision of resources in such a way that
+they are dedicated to a specific NSI. Data-plane resources are
+provided in the data-plane through the allocation of a lambda, through
+the allocation of a time domain multiplexed resource such as a FlexE
+channel or through a service such as an MPLS hard-pipe. Note that although
+hard-pipes can be used to allocate dedicated, non-stared resources to an
+NSI, the using of allocation is bandwidth, which can result is more
+"lumpiness" in the physical channel that would not be present with a
+true physical layer multiplexing scheme.
+
+## Logical Multiplexing of Physical Channels
+
+Methods of logically multiplexing the data-plane over a physical channel
+include various types of tunnel (IP or MPLS) or various types of pseudowire
+(again IP or MPLS). Although the design of deterministic networking
+techniques helps, it is not possible to achieve the same degree of
+dynamic isolation with these techniques as it is possible to achieve
+with pure physical layer multiplexing techniques. However where such
+techniques provide sufficient isolation their use leads to a network
+design that may  be deployed on existing equipment designs and which
+can make unused bandwidth available to best effort traffic.
+
+
+## The Role of VPNs
+
+VPNs are a candidate technology for network slicing. The existing VPN 
+technologies 
+mainly focus on the isolation of forwarding tables between different tenants and 
+providing virtual topology of the connectivity between the tenant sites, the 
+VPN layer and the underlying tunnels are usually loosely coupled, and 
+statistical 
+multiplexing is adopted to improve the tunnel utilization. 
+
+It is unclear that whether VPN along with existing underlying tunnels can 
+provide the required performance and isolation for network slices of 
+critical services.
+
+## The Role of Deterministic Networking
+
+Deterministic networking is a technology under development in the 
+IETF that aims to both minimize congestion loss and set an upper
+bound on per hop latency. It allows a packet layer to emulate 
+the behaviour of a fully partitioned underlay such might be provided
+through some physical layer multiplexing system such as FlexE.
+
+Deterministic networking works by policing the ingress rate 
+of a flow to an agreed maximum and then scheduling the transmission time
+of each flow to reduce the "lumpiness" and hence the possible
+buildup of queues and hence congestion loss. 
+
+Whilst deterministic networking is not as perfect as physical layer
+multiplexing in terms of latency minimization, because the scheduling
+is hop by hop and not end to end meaning that at each hop a packet has
+to wait for the transmission slot allocated to its flow, it has the 
+advantage that it is able to allocate slots not needed by the allocated 
+traffic to best effort traffic. This reallocation of the unused transmission
+slots to background traffic significantly improves the efficiency of
+the network by amortizing the cost between the scheduled high priority
+users and the best effort users.
+
+## Dynamic Re provisioning
+
+A requiremnet of the network slicing system is that it can be dynamically and
+non-disruptively reprovisioned. That is not an unusual requirement of a modern
+network. However the frequency of reprovisioning will be realtively high, such
+that it in many cases it is not possible to hide any disruption during a "quiet"
+time.
+
+Physical multiplexing methods such as FlexE have the ability to seemlessly 
+reprovision multiplex slots. At the network layer techniques such as 
+make-before-break, segment routing, and loop-free-convergence can be used to
+provide uninterupted operation during a topology change. 
+
+The dynamic re-provisioning of the control plane and service functions is for 
+further study.
+
+
+# The Control Plane
+
+The Control plane plays an important role in network slicing. It creates 
+multiple network slices with diverse requirements dynamically according to 
+the collected resource and capabilities of the physical network. With the 
+progress of software defined networking, the control plane of network 
+slicing would comply with the SDN architecture, while still using
+distributed control protocols when it is necessary or proved to have 
+advantages. Existing protocols in each layer will be reused as much as possible.
+
+# SDN
+
+To be provided in a future version.
+
+# Service Functions
+
+Service functions are  provided using the techniques being developed by the 
+IETF Service Function Chaining Working Group. 
+
+Service Functions are normally virtualized and are executed on general purpose
+compute platforms. The ability of the common compute platforms to meet the 
+exacting rquiremnets of network slicing is for further study.
+
+# OAM
+
+To be provided in a future version.
+
+# Telemetry
+
+To be provided in a future version.
+
+# Network Sslice Recursion
+
+The desire by some users planning to use network slicing is to be able to network
+slice a network slice that they have purchased from their provider. There are
+two ways in which this can be provided. One method that might be used is to literally 
+sub-divide the slice into smaller slices by introducing an additional level of encapsulation,
+which might be as simple as pushing an additional MPLS label. They would
+also need to virtualize the compute resourses that had been purchased.  
+Another method that might be considerd is to
+provide an interface to the slice manager that allows a user to create and remove slices
+within an agreed total slice resource budget.
+
+The first method deligates slice control and lifecycle management to the user in a way
+that is largely opaque to the provider. However it has the property that all of the smaller
+slices will  have the same guaranteed properties regardless of whether they need them or not.
+
+The second method has the property that the user can request bespoke properties for each
+mini-slice. This has economic and flexibility advantages. It is cheaper because the user
+only purchases what they need. It is flexible because the user can upgrade to a service
+with other properties (strickter guarantees, higher bandwidth etc) should the need 
+arise without needing to migrate their existing service.
+
+One property that the first is that if the user wishes to share control information between
+the slices under their control this is relatively easy whereas the second method would been
+a gateway. Depending on the ammount of shared state a gateway may represent a bottleneck.
+
+
+# Security Considerations
+
+Each layer of the system has its own security requirements. 
+
+# IANA Considerations
+
+This document makes no requests of IANA.
+
+
+ 
+
