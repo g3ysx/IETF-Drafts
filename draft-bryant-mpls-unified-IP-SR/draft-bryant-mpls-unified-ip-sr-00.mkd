@@ -1,0 +1,148 @@
+---
+coding: utf-8
+
+title: A Unified Approach to IP Segment Routing
+abbrev: Unified IP SR
+docname: draft-bryant-mpls-unified-ip-sr-00
+wg: MPLS Working Group
+category: std
+
+stand_alone: yes
+pi: [toc, sortrefs, symrefs, comments]
+
+author:
+  -
+       ins: S. Bryant
+       name: Stewart Bryant
+       org: Huawei
+       email: stewart.bryant@gmail.com
+  -
+       ins: A. Author
+       name: Another Author
+       org: Their Affiliation
+       email: a.author@example.com
+
+
+normative:
+  RFC2119:
+  RFC3032:
+  I-D.ietf-spring-segment-routing-mpls:
+--- abstract
+
+This is an abstract abstract
+
+--- middle
+
+# Introduction
+
+sasddasd
+
+# Requirements Language
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in
+{{RFC2119}}.
+
+# The Unified Segment Routing Protocol Stack
+
+The Unified Segment Routing (USR) protocol stack is shown below in {{FIGPktFormat}}. 
+
+    +---------------------+
+    |                     |
+    |      IPvX Header    |
+    |                     |
+    +---------------------+
+    |      Optional       |
+    |     UDP Header      |
+    |                     |
+    +---------------------+
+    |   Segment Routing   |
+    |  Instruction Stack  |
+    .                     .
+    .                     .
+    +---------------------+
+    |      Optional       |
+    |      Metadata       |
+    .                     .
+    .                     .
+    +---------------------+
+    |                     |
+    |      Payload        |
+    .                     .
+    .                     .
+    +---------------------+
+{: #FIGPktFormat title="Protocol Stack"}
+
+The core of the protocol stack is the Segment Routing Instruction Stack (SRIS). 
+The top label
+is the next instruction to be executed. When the node to which this instruction is
+directed has processed the instruction it is removed (poped) from the SRIS, and the next
+instruction processed.
+
+Preceeding the SRIS are the fields used to deliver the packet to the node that will 
+process the instruction at the top of the SRIS. The outer header is an IP header. 
+It can be an IPv4 or an IPv6 header as required to traverse the next SR hop. 
+
+The next header is an optional UDP header. This is used to provide Equal Cost 
+Multi-Path (ECMP) load balancing. The use of a UDP header allows nodes on the path to
+load balance based on the five tuple (Source Address, Destination Address, 
+IP type/next header, UDP soure port and UDP destination port) universally used 
+by modern routers.
+
+Following the SRIS is optional metadata. This allows nodes to record information 
+as the packet passes through the network, and it allows the ingress node to record 
+record information that the terminal node needs to process the packet, such as return
+path information, content identifiers etc.
+
+## SRIS Format
+
+The SRIS uses the same format as {{RFC3032}}. This is a compact representation
+that allows the use of exiting data plane hardware. Its use does not imply that
+MPLS needs to be enabled, or that MPLS protocols need to be used. It simply
+a compact, convenient way of carrying the Instructions (Segment IDs or SIDs) needed
+as the packet traverses the network.
+
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+    |              Instruction                  | TC  |S|   TTL     | SRIS
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ Entry
+
+                    Instruction:  Label Value, 20 bits
+                    TC:           Trafic Class, 3 bits
+                    S:            Bottom of Stack, 1 bit
+                    TTL:          Time to Live, 8 bits
+{: #FIGSRISFormat title="SRIS Entry"}
+
+As with {{I-D.ietf-spring-segment-routing-mpls}} a 20 bit Instruction is
+used. The S bit has bottom of stack semantics defined in {{RFC3032}}.
+TTL and TC are discussed in {{TTLSec}} and {{TCSec}} respectively.
+
+
+## TTL {#TTLSec}
+aDASD
+
+## TC {#TCSec}
+ASASD
+
+# Equal Cost Multi-path support
+ASDASD
+
+# Metadata
+Asdasd
+
+# Traceback
+asasd
+
+# Elements of Proceedure
+asdasd
+
+# An MPLS Hop
+
+# Security Considerations
+asdasd
+
+# IANA Considerations
+ASASD
+
