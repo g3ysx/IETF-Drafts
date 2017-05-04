@@ -1,0 +1,199 @@
+---
+coding: utf-8
+
+title: Use of Ethernet Control Word RECOMMENDED
+abbrev: Ethernet-CW-RECOMMENDED
+docname: draft-xxx-pals-ethernet-cw-00
+wg: PALS Working Group
+category: bcp
+updates: 4448
+
+stand_alone: yes
+pi: [toc, sortrefs, symrefs, comments]
+
+author:
+  -
+       ins: S. Bryant
+       name: Stewart Bryant
+       org: Huawei
+       email: stewart.bryant@gmail.com
+  -
+       ins: A. Author
+       name: Another Author
+       org: Their Affiliation
+       email: a.author@example.com
+
+
+normative:
+  RFC2119:
+  RFC4385:
+  RFC4448:
+  RFC6391:
+  RFC6790:
+
+informative:
+  RFC3209:
+  RFC5085:
+  RFC2992:
+  
+
+--- abstract
+
+Incorrectly applied equal cost multi-path due to the 
+aliasing of Ethernet pseudowire packets with IP packets 
+causes flow misordering. This can occur when Ethernet
+pseudowires are configured to not use the pseudowire
+control word. This problem has become more serious due 
+to the deployment of equipment with Ethernet MAC addresses 
+that start with 0x4 or 0x6. The use of the Ethernet
+pseudowire control word addresses this problem. This
+document recommends the use of the Ethernet pseudowire
+control word in all but exceptional circumstances.
+
+This document updates RFC4448.
+
+
+--- middle
+
+# Introduction
+
+Incorrectly applied equal cost multi-path due to the 
+aliasing of Ethernet pseudowire (PW) packets with IP packets 
+causes flow misordering. This can occur when Ethernet
+pseudowires are configured to not use the pseudowire
+control word. This problem has become more serious due 
+to the deployment of equipment with Ethernet MAC addresses 
+that start with 0x4 or 0x6. The use of the Ethernet
+pseudowire control word addresses this problem. This
+document recommends the use of the Ethernet pseudowire
+control word in all but exceptional circumstances.
+
+# Specification of Requirements
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in RFC 2119 [RFC2119].
+
+# Background
+
+Ethernet pseudowire (PW) encapsulation is specified in {{RFC4448}}. In 
+particular the reader is drawn to section 4.6, part of which is quoted
+below for the convenience of the reader:
+
+~~~~
+    "The control word defined in this section is based on the Generic 
+    PW MPLS Control Word as defined in [RFC4385].  It provides the 
+    ability to sequence individual frames on the PW, avoidance of 
+    equal-cost multiple-path load-balancing (ECMP) [RFC2992], and 
+    Operations and Management (OAM) mechanisms including VCCV 
+    [RFC5085].
+
+    "[RFC4385] states, "If a PW is sensitive to packet misordering 
+    and is being carried over an MPLS PSN that uses the contents 
+    of the MPLS payload to select the ECMP path, it MUST employ a 
+    mechanism which prevents packet misordering." This is necessary
+    because ECMP implementations may examine the first nibble after
+    the MPLS label stack to determine whether the labeled packet
+    is IP or not.  Thus, if the source MAC address of an Ethernet
+    frame carried over the PW without a control word present begins
+    with 0x4 or 0x6, it could be mistaken for an IPv4 or IPv6
+    packet.  This could, depending on the configuration and
+    topology of the MPLS network, lead to a situation where all
+    packets for a given PW do not follow the same path.  This may
+    increase out-of-order frames on a given PW, or cause OAM packets
+    to follow a different path than actual traffic (see
+    Section 4.4.3, "Frame Ordering").
+
+    "The features that the control word provides may not be needed 
+    for a given Ethernet PW.  For example, ECMP may not be present 
+    or active on a given MPLS network, strict frame sequencing may 
+    not be required, etc.  If this is the case, the control word 
+    provides little value and is therefore optional.  Early Ethernet 
+    PW implementations have been deployed that do not include a 
+    control word or the ability to process one if present.  To 
+    aid in backwards compatibility, future implementations MUST 
+    be able to send and receive frames without the control word 
+    present."
+~~~~
+
+At the time when pseudowires were first deployed, some equipment of
+commercial significance was unable to process the Ethernet control word 
+(CW). In addition, at that time it was considered that no Ethernet MAC 
+address had been issued by the IEEE Registration Authority Committee 
+(RAC) that started with 0x4 or 0x6, and thus it was thought to be safe 
+to deploy Ethernet PWs without the CW.
+
+Since that time the RAC has issued Ethernet MAC addresses start with 0x4
+and thus the assumption that in practical networks there would be
+no confusion between an Ethernet PW packet without the CW and an IP 
+packet is not safe. 
+
+Possibly through the use of unauthorized Ethernet MAC addresses, this 
+assumption has been unsafe for a while, leading some equipment vendors 
+to implement more complex, proprietary, methods to discriminate between 
+Ethernet PW packets and IP packets. 
+
+A recent posting on the Nanog email list has highlighted this problem:
+
+https://mailman.nanog.org/pipermail/nanog/2016-December/089395.html
+
+RFC EDITOR Please delete 
+{{RFC4385}} {{RFC2992}} {{RFC5085}}-since references inside literal text are not included by 
+kramdown
+
+# Recommendation
+
+The ambiguity between an MPLS payload that is a Ethernet PW and one 
+that is an IP packet is resolved when the Ethernet PW control word (CW) 
+is used. This document updates RFC4448 {{RFC4448}} to state that 
+where both both the ingress PE and the egress PE support the Ethernet
+pseudowire control word, then the CW MUST be used.
+
+# Equal Cost Multi-path (ECMP)
+
+Where the volume of traffic on an Ethernet PW is such that ECMP is required
+then one of two methods may be used: 
+
+o  Flow-Aware Transport (FAT) of Pseudowires over an MPLS Packet Switched Network 
+specified in {{RFC6391}}, or 
+
+o LSP entropy labels specified {{RFC6790}}
+
+RFC6391 works by increasing the entropy of the bottom of stack label. It
+requires that both the ingress and egress provider edge (PE)s support
+this feature. It also requires that sufficient
+LSRs on the LSP between the ingress and egress PE be able to select an  
+ECMP path on an MPLS packet with the resultant stack depth. 
+
+RFC6790 works by including an entropy value in the LSP part of the label
+stack. This requires that the Ingress and Egress PEs support the insertion
+and removal of the entropy label (EL) and the entropy label indicator, and that 
+sufficient LSRs on the LSP are able to preform ECMP based on the EL.
+
+In both cases there considerations in getting 
+Operations, Administration, and Maintenance (OAM) packets to follow the same
+path as a data packet. This is described in detail section 7 of RFC6391,
+and section 6 of RFC6790. However in both cases the situation is
+improved compared to the ECMP behaviour in the case where the Ethernet PW
+CW was not used, since there is currently no known method of getting a PW OAM packet to
+follow the same path as a PW data packet subjected to ECMP based on the 
+five tuple of the IP payload.
+
+# Mitigations
+
+Where it is not possible to use the Ethernet PW CW, the effects of ECMP can
+be disabled by carrying the PW over a traffic engineered path that does not
+subject the payload to load balancing (for example {{RFC3209}}. However
+such paths may be subjected to link bundle load balancing and of course 
+the single LSP has to carry the full PW load.
+
+# Security Considerations
+
+This document expresses a preference for one existing and widely deployed
+Ethernet PW encapsulation over another. These methods have identical security
+considerations, and thus there are no additional security issue raised by this
+document.
+
+# IANA Considerations
+
+This document makes no IANA requests.
