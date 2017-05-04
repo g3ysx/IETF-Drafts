@@ -17,16 +17,31 @@ author:
        org: Huawei
        email: stewart.bryant@gmail.com
   -
-       ins: A. Author
-       name: Another Author
-       org: Their Affiliation
-       email: a.author@example.com
+       ins: X. Xu
+       name: Xiaohu Xu
+       org: Huawei
+       email: xuxiaohu@huawei.com
+  -
+       ins: A. Farrel
+       name: Adrian Farrel
+       org: Juniper Networks
+       email: afarrel@juniper.net
 
 
 normative:
   RFC2119:
   RFC3032:
   I-D.ietf-spring-segment-routing-mpls:
+  I-D.ietf-spring-segment-routing:
+  RFC7510:
+  RFC2992:
+  RFC5082:
+  RFC7510:
+  
+informative:
+  RFC3985:  
+
+
 --- abstract
 
 This is an abstract abstract
@@ -48,52 +63,61 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 
 The Unified Segment Routing (USR) protocol stack is shown below in {{FIGPktFormat}}. 
 
-    +---------------------+
-    |                     |
-    |      IPvX Header    |
-    |                     |
-    +---------------------+
-    |      Optional       |
-    |     UDP Header      |
-    |                     |
-    +---------------------+
-    |   Segment Routing   |
-    |  Instruction Stack  |
-    .                     .
-    .                     .
-    +---------------------+
-    |      Optional       |
-    |      Metadata       |
-    .                     .
-    .                     .
-    +---------------------+
-    |                     |
-    |      Payload        |
-    .                     .
-    .                     .
-    +---------------------+
+                          +---------------------+
+                          |                     |
+                          |      IPvX Header    |
+                          |                     |
+                          +---------------------+
+                          |     UDP Header      |
+                          |                     |
+                          +---------------------+
+                          |   Segment Routing   |
+                          |  Instruction Stack  |
+                          .                     .
+                          .                     .
+                          +---------------------+
+                          |      Optional       |
+                          |      Metadata       |
+                          .                     .
+                          .                     .
+                          +---------------------+
+                          |                     |
+                          |      Payload        |
+                          .                     .
+                          .                     .
+                          +---------------------+
 {: #FIGPktFormat title="Protocol Stack"}
 
-The core of the protocol stack is the Segment Routing Instruction Stack (SRIS). 
-The top label
+The payload may be of any type that, with an appropriate convergence
+layer can be carried over a packet network. It is anticipated that the 
+most common packet types will be IPv4, IPv6 and pseudowires {{RFC3985}}.
+
+Preceesing the Payload is any payload meta-data that is required. This is an
+optional field.
+
+Preceeding the meta-data is the Segment Routing Instruction Stack (SRIS) which
+carries the sequence of instructions to be executed on the packet as it traverses
+the network.
+
+Preceeding the meda-data is a UDP header which is primarily used
+to introduce entropy to allow equal-cost multi-path load balancing (ECMP) {{RFC2992}} in the 
+IP layer {{RFC7510}}.
+
+Preceeding the UDP header is the IP header which may be IPv4 or IPv6.
+
+# The Segment Routing Instruction Stack
+
+The core of the protocol stack is the Segment Routing Instruction Stack (SRIS).
+This consisists of a stack of Segment Identifiers  as described in 
+{{I-D.ietf-spring-segment-routing}} encoded as an MPLS label stack as descibed in
+{{I-D.ietf-spring-segment-routing-mpls}}. 
+
+The top SRIS entry
 is the next instruction to be executed. When the node to which this instruction is
 directed has processed the instruction it is removed (poped) from the SRIS, and the next
-instruction processed.
+instruction processed. A discussion of the currently valid SRIS operations is provided in
+{{SRISOPS}}.
 
-Preceeding the SRIS are the fields used to deliver the packet to the node that will 
-process the instruction at the top of the SRIS. The outer header is an IP header. 
-It can be an IPv4 or an IPv6 header as required to traverse the next SR hop. 
-
-The next header is an optional UDP header. This is used to provide Equal Cost 
-Multi-Path (ECMP) load balancing. The use of a UDP header allows nodes on the path to
-load balance based on the five tuple (Source Address, Destination Address, 
-IP type/next header, UDP soure port and UDP destination port) universally used 
-by modern routers.
-
-Following the SRIS is optional metadata. This allows nodes to record information 
-as the packet passes through the network, and it allows the ingress node to record 
-record information that the terminal node needs to process the packet, such as return
-path information, content identifiers etc.
 
 ## SRIS Format
 
@@ -121,24 +145,74 @@ TTL and TC are discussed in {{TTLSec}} and {{TCSec}} respectively.
 
 
 ## TTL {#TTLSec}
-aDASD
+
+Where the SRIS is being used in a pure IP environment there are two strategies
+for setting the TTL. One approach is to set it to a low value to limit the 
+distance the packet can travel if it should ever be incorrectly forwarded as
+an MPLS packet. A value of one should be acceptable subject to hardware
+behaviour. On the other since each SRIS entry is used only once and then
+discarded, there is merit in following the advice of {{RFC5082}} and setting
+the TTL to 255. If configured to operate in this mode if an SRIS entry is 
+ever received with a value of other 255 the system SHOULD discard the packet
+and alert the operator.
+
+As noted in {{HYBRID}} it is possible to use the system in a mixed IP/MPLS
+environment, in which case the TTL should be set to 255, as otherwise
+configured by the operator or ass needed for any OAM operation.
 
 ## TC {#TCSec}
-ASASD
+
+This has the normal meaning as defined in {{RFC3032}} and modified in {{RFC5462}}.
+
+# SRIS Operations {#SRISOPS}
+
+
+
+# UDP/IP encapsulation.
+
+The proceedures defined in {{RFC7510}} are followed. RFC7510 specifies the
+values to be used in the UDP Source Port, Destination Port, and Checksum
+fields. 
+
+An administrative domain, or set of administrative domains that are 
+sufficiently well managed and monitored to be able to safely use IP 
+segment routing is likely to comply with the requirements called out
+in RFC7510 to permit operation with a zero checksum over IPv6. However
+each operator needs to validate the decision on whether or not to use
+a UDP checksum for themselves.
+
+The RFC7510 UDP header may be carried over IPv4 or over IPv6.
+
+
+
+
+
+
+
+
+
+
 
 # Equal Cost Multi-path support
 ASDASD
 
+# Multicast
+
 # Metadata
 Asdasd
 
-# Traceback
-asasd
+# Hybrid Operation {#HYBRID}
+
+# UDP Encapsulation
+
+# IP Encapsulation
 
 # Elements of Proceedure
 asdasd
 
 # An MPLS Hop
+
+# OAM
 
 # Security Considerations
 asdasd
@@ -146,3 +220,19 @@ asdasd
 # IANA Considerations
 ASASD
 
+# Just keep the text for a bit
+
+Preceeding the SRIS are the fields used to deliver the packet to the node that will 
+process the instruction at the top of the SRIS. The outer header is an IP header. 
+It can be an IPv4 or an IPv6 header as required to traverse the next SR hop. 
+
+The next header is an  UDP header. This is used to provide Equal Cost 
+Multi-Path (ECMP) load balancing. The use of a UDP header allows nodes on the path to
+load balance based on the five tuple (Source Address, Destination Address, 
+IP type/next header, UDP soure port and UDP destination port) universally used 
+by modern routers.
+
+Following the SRIS is optional metadata. This allows nodes to record information 
+as the packet passes through the network, and it allows the ingress node to record 
+record information that the terminal node needs to process the packet, such as return
+path information, content identifiers etc.
