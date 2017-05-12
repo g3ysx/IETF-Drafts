@@ -2,10 +2,10 @@
 coding: utf-8
 
 title: Use of Ethernet Control Word RECOMMENDED
-abbrev: Ethernet-CW-RECOMMENDED
-docname: draft-xxx-pals-ethernet-cw-00
+abbrev: Ethernet CW RECOMMENDED
+docname: draft-bryant-pals-ethernet-cw-00
 wg: PALS Working Group
-category: bcp
+category: std
 updates: 4448
 
 stand_alone: yes
@@ -18,11 +18,15 @@ author:
        org: Huawei
        email: stewart.bryant@gmail.com
   -
-       ins: A. Author
-       name: Another Author
-       org: Their Affiliation
-       email: a.author@example.com
-
+       ins: A. Malis
+       name: Andrew G Malis
+       org: Huawei
+       email: agmalis@gmail.com
+  -
+       ins: I. Bagdonas
+       name: Ignas Bagdonas
+       org: Ignas' Affiliation
+       email: ibagdona.ietf@gmail.com>
 
 normative:
   RFC2119:
@@ -30,6 +34,7 @@ normative:
   RFC4448:
   RFC6391:
   RFC6790:
+  RFC4928:
 
 informative:
   RFC3209:
@@ -38,15 +43,15 @@ informative:
   
 
 --- abstract
-
-Incorrectly applied equal cost multi-path due to the 
-aliasing of Ethernet pseudowire packets with IP packets 
-causes flow misordering. This can occur when Ethernet
-pseudowires are configured to not use the pseudowire
-control word. This problem has become more serious due 
-to the deployment of equipment with Ethernet MAC addresses 
+The pseudowire(PW) encapsulation of Ethernet, as defined in RFC4448, specifies 
+that the use of the control word (CW) is optional. In the absence of the CW an
+Ethernet pseudowire packet can be misidentified as an IP packet by
+a label switching router (LSR). This in turn may lead to the selection 
+of the wrong equal-cost-multi-path (ECMP) path  for the packet, leading
+in turn to the mis-ordering of packets. This problem has become more 
+serious due to the deployment of equipment with Ethernet MAC addresses 
 that start with 0x4 or 0x6. The use of the Ethernet
-pseudowire control word addresses this problem. This
+PW CW addresses this problem. This
 document recommends the use of the Ethernet pseudowire
 control word in all but exceptional circumstances.
 
@@ -57,14 +62,31 @@ This document updates RFC4448.
 
 # Introduction
 
-Incorrectly applied equal cost multi-path due to the 
-aliasing of Ethernet pseudowire (PW) packets with IP packets 
-causes flow misordering. This can occur when Ethernet
-pseudowires are configured to not use the pseudowire
-control word. This problem has become more serious due 
-to the deployment of equipment with Ethernet MAC addresses 
+The pseudowire(PW) encapsulation of Ethernet, as defined in RFC4448, specifies 
+that the use of the control word (CW) is optional. It is common for 
+label switching routers (LSRs) to search past the end of the label stack
+to determine whether the payload is an IP packet, and if the payload 
+is an IP packet, to select the next hop based of the so called "five-tuple" 
+(IP source address, IP destination address, protocol/next-header, transport 
+layer source port and transport layer destination port).
+In the absence of a PW CW an
+Ethernet pseudowire packet can be misidentified as an IP packet by
+a label switching router (LSR) selecting the ECMP path based on the 
+five-tuple. This in turn may lead to the selection 
+of the wrong equal-cost-multi-path (ECMP) path  for the packet, leading
+in turn to the mis-ordering of packets. Further discussion of this topic
+is published in {{RFC4928}}.
+
+Flow misordering can also happen in a single path scenario when 
+traffic classification and differential forwarding treatment 
+mechanisms {{DTTF}} are in use. 
+
+This problem has become more 
+serious due to the deployment of equipment with Ethernet MAC addresses 
 that start with 0x4 or 0x6. The use of the Ethernet
-pseudowire control word addresses this problem. This
+PW CW addresses this problem. 
+
+This
 document recommends the use of the Ethernet pseudowire
 control word in all but exceptional circumstances.
 
@@ -117,29 +139,33 @@ below for the convenience of the reader:
 ~~~~
 
 At the time when pseudowires were first deployed, some equipment of
-commercial significance was unable to process the Ethernet control word 
+commercial significance was unable to process the Ethernet Control Word 
 (CW). In addition, at that time it was considered that no Ethernet MAC 
 address had been issued by the IEEE Registration Authority Committee 
-(RAC) that started with 0x4 or 0x6, and thus it was thought to be safe 
+(RAC) that starts with 0x4 or 0x6, and thus it was thought to be safe 
 to deploy Ethernet PWs without the CW.
 
-Since that time the RAC has issued Ethernet MAC addresses start with 0x4
+Since that time the RAC has issued Ethernet MAC addresses start with 0x4 or 0x6
 and thus the assumption that in practical networks there would be
 no confusion between an Ethernet PW packet without the CW and an IP 
-packet is not safe. 
+packet is no longer correct. 
 
 Possibly through the use of unauthorized Ethernet MAC addresses, this 
 assumption has been unsafe for a while, leading some equipment vendors 
 to implement more complex, proprietary, methods to discriminate between 
-Ethernet PW packets and IP packets. 
+Ethernet PW packets and IP packets. Such mechanisms rely on the heuristics 
+of examining the transit packets in trying to find out the exact 
+payload type of the packet and cannot be reliable due to the 
+random nature of the payload carried within such packets. 
 
 A recent posting on the Nanog email list has highlighted this problem:
 
 https://mailman.nanog.org/pipermail/nanog/2016-December/089395.html
 
-RFC EDITOR Please delete 
-{{RFC4385}} {{RFC2992}} {{RFC5085}}-since references inside literal text are not included by 
-kramdown
+RFC EDITOR Please delete this paragraph.  
+Kramdown does not include references when they are only found in 
+literal text so I include them here: {{RFC4385}} {{RFC2992}} {{RFC5085}}
+as a fixup.
 
 # Recommendation
 
@@ -172,12 +198,18 @@ sufficient LSRs on the LSP are able to preform ECMP based on the EL.
 
 In both cases there considerations in getting 
 Operations, Administration, and Maintenance (OAM) packets to follow the same
-path as a data packet. This is described in detail section 7 of RFC6391,
+path as a data packet. This is described in detail section 7 of {{RFC6391}},
 and section 6 of RFC6790. However in both cases the situation is
-improved compared to the ECMP behaviour in the case where the Ethernet PW
-CW was not used, since there is currently no known method of getting a PW OAM packet to
+improved compared to the ECMP behavior in the case where the Ethernet PW
+CW was not used, since there is currently no known method of getting a PW 
+OAM packet to
 follow the same path as a PW data packet subjected to ECMP based on the 
 five tuple of the IP payload.
+
+# Differential Treatment of Traffic Flows {#DTTF}
+
+A description of this will be provided in a future version.
+
 
 # Mitigations
 
@@ -187,12 +219,22 @@ subject the payload to load balancing (for example {{RFC3209}}. However
 such paths may be subjected to link bundle load balancing and of course 
 the single LSP has to carry the full PW load.
 
+# Operational Considerations
+
+CW presence on the PW is controlled by the configuration and may be subject 
+to default operational mode of not being enabled. Care needs to be taken 
+to ensure that software that implements this recommendation does not 
+depend on existing configuration setting that prevents the use of 
+control word. It is recommended that platform software emits a 
+rate limited message indicating that CW  can be used but is disabled 
+due to existing configuration. 
+
 # Security Considerations
 
 This document expresses a preference for one existing and widely deployed
 Ethernet PW encapsulation over another. These methods have identical security
-considerations, and thus there are no additional security issue raised by this
-document.
+considerations, which are discussed in {{RFC4448}}. This document introduces
+no additional security issues.
 
 # IANA Considerations
 
