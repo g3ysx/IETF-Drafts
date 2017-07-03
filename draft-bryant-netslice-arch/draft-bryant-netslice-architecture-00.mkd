@@ -38,9 +38,9 @@ Network slicing is a method whereby a customer buys the use
 of an isolated network with communications and compute resource dedicated
 to their own needs, where this is a virtual network which is
 part of a larger network that is shared amongst many such customers.
-A network slice is further characterised by the ability of the 
+A network slice is further characterized by the ability of the 
 customer to modify their requirements on the fly and have their
-network slice dynamically and automatially re-provisioned to meet
+network slice dynamically and automatically re-provisioned to meet
 their current needs.
 
 --- middle
@@ -55,7 +55,7 @@ Network slicing is a method whereby a customer buys the use
 of an isolated network with communications and compute resource dedicated
 to their own needs, where this is a virtual network which is
 part of a larger network that is shared amongst many such customers.
-A network slice is further characterised by the ability of the 
+A network slice is further characterized by the ability of the 
 customer to modify their requirements on the fly and have their
 network slice dynamically and automatially re-provisioned to meet
 their current needs.
@@ -452,9 +452,14 @@ NSI, the using of allocation is bandwidth, which can result is more
 "lumpiness" in the physical channel that would not be present with a
 true physical layer multiplexing scheme.
 
-## Logical Multiplexing of Physical Channels
-
-Methods of logically multiplexing the data-plane over a physical channel
+Soft slicing refers to the provision of resources in such a way
+that whilst the slices are separated such that they cannot statically
+interfere with each other (one cannot receive the others packets
+or observe or interfere with the other's storage), they can interact
+dynamically (one may find the other is sending a packet just when it
+wants to, or the other may be using CPU cycles just when the other
+needs to process some information). Soft slicing is achieved
+through logically multiplexing the data-plane over a physical channel
 include various types of tunnel (IP or MPLS) or various types of pseudowire
 (again IP or MPLS). Although the design of deterministic networking
 techniques helps, it is not possible to achieve the same degree of
@@ -464,6 +469,7 @@ techniques provide sufficient isolation their use leads to a network
 design that may  be deployed on existing equipment designs and which
 can make unused bandwidth available to best effort traffic.
 
+## This section was deleted.
 
 ## The Role of VPNs
 
@@ -502,32 +508,49 @@ slots to background traffic significantly improves the efficiency of
 the network by amortizing the cost between the scheduled high priority
 users and the best effort users.
 
-## Dynamic Re provisioning
+## Dynamic Reprovisioning
 
-A requiremnet of the network slicing system is that it can be dynamically and
+A requirement of the network slicing system is that it can be dynamically and
 non-disruptively reprovisioned. That is not an unusual requirement of a modern
-network. However the frequency of reprovisioning will be realtively high, such
+network. However the frequency of reprovisioning will be relatively high, such
 that it in many cases it is not possible to hide any disruption during a "quiet"
 time.
 
-Physical multiplexing methods such as FlexE have the ability to seemlessly 
+Physical multiplexing methods such as FlexE have the ability to seamlessly 
 reprovision multiplex slots. At the network layer techniques such as 
 make-before-break, segment routing, and loop-free-convergence can be used to
-provide uninterupted operation during a topology change. 
+provide uninterrupted operation during a topology change. 
 
-The dynamic re-provisioning of the control plane and service functions is for 
+The dynamic reprovisioning of the control plane and service functions is for 
 further study.
 
 
 # The Control Plane
 
-The Control plane plays an important role in network slicing. It creates 
-multiple network slices with diverse requirements dynamically according to 
-the collected resource and capabilities of the physical network. With the 
-progress of software defined networking, the control plane of network 
-slicing would comply with the SDN architecture, while still using
-distributed control protocols when it is necessary or proved to have 
-advantages. Existing protocols in each layer will be reused as much as possible.
+There are two control plane systems that we need to consider. The
+first is the control plane of the slicing system itself, the second is
+the control plane of an individual slice.
+
+The network slicing control plane receives instructions from the 
+third party and creates the required network slices and manages
+them throughout their lifecycle. The slices need to satisfy
+a diverse set requirements and need to be dynamically managed
+as the collective requirements of the set of network slices
+changes, and as the resource and capabilities of the physical network
+change with time. Changes occur as resources fail, and resources are
+added. They also occur as the slices are added and deleted possibly needing
+a garbage collection and defagmantation service.
+
+The control plane of the network slicing system needs to comply with 
+the SDN architecture, while still using distributed control protocols 
+when it is necessary or proved to have advantages.
+
+Within a slice the full range of existing control plane technologies
+needs to be permissible. Some slices will run the existing IGP protocols
+(such as IS-IS or OSPF) whilst others may use BGP. Other slices 
+will be controlled by SDN controllers. However the architecture needs
+to be sufficiently general so as not to restrict the control protocols that
+may be used within a slice.
 
 # SDN
 
@@ -540,7 +563,7 @@ IETF Service Function Chaining Working Group.
 
 Service Functions are normally virtualized and are executed on general purpose
 compute platforms. The ability of the common compute platforms to meet the 
-exacting rquiremnets of network slicing is for further study.
+exacting requirements of network slicing is for further study.
 
 # OAM
 
@@ -550,7 +573,7 @@ To be provided in a future version.
 
 To be provided in a future version.
 
-# Network Sslice Recursion
+# Network Slice Recursion
 
 The desire by some users planning to use network slicing is to be able to network
 slice a network slice that they have purchased from their provider. There are
@@ -558,23 +581,23 @@ two ways in which this can be provided. One method that might be used is to lite
 sub-divide the slice into smaller slices by introducing an additional level of encapsulation,
 which might be as simple as pushing an additional MPLS label. They would
 also need to virtualize the compute resourses that had been purchased.  
-Another method that might be considerd is to
+Another method that might be considered is to
 provide an interface to the slice manager that allows a user to create and remove slices
 within an agreed total slice resource budget.
 
-The first method deligates slice control and lifecycle management to the user in a way
+The first method delegates slice control and life-cycle management to the user in a way
 that is largely opaque to the provider. However it has the property that all of the smaller
 slices will  have the same guaranteed properties regardless of whether they need them or not.
 
 The second method has the property that the user can request bespoke properties for each
 mini-slice. This has economic and flexibility advantages. It is cheaper because the user
 only purchases what they need. It is flexible because the user can upgrade to a service
-with other properties (strickter guarantees, higher bandwidth etc) should the need 
+with other properties (stricter guarantees, higher bandwidth etc) should the need 
 arise without needing to migrate their existing service.
 
 One property that the first is that if the user wishes to share control information between
 the slices under their control this is relatively easy whereas the second method would been
-a gateway. Depending on the ammount of shared state a gateway may represent a bottleneck.
+a gateway. Depending on the amount of shared state a gateway may represent a bottleneck.
 
 
 # Security Considerations
