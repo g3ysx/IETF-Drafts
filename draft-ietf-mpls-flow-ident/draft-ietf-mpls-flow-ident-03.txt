@@ -5,13 +5,13 @@
 MPLS Working Group                                             S. Bryant
 Internet-Draft                                                    Huawei
 Intended status: Informational                              C. Pignataro
-Expires: July 27, 2017                                     Cisco Systems
+Expires: November 13, 2017                                 Cisco Systems
                                                                  M. Chen
                                                                    Z. Li
                                                                   Huawei
                                                                G. Mirsky
                                                                ZTE Corp.
-                                                        January 23, 2017
+                                                            May 12, 2017
 
 
                 MPLS Flow Identification Considerations
@@ -38,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 27, 2017.
+   This Internet-Draft will expire on November 13, 2017.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Bryant, et al.            Expires July 27, 2017                 [Page 1]
+Bryant, et al.          Expires November 13, 2017               [Page 1]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    to this document.  Code Components extracted from this document must
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Bryant, et al.            Expires July 27, 2017                 [Page 2]
+Bryant, et al.          Expires November 13, 2017               [Page 2]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    Improvements in link and transmission technologies mean that it may
@@ -165,9 +165,9 @@ Internet-Draft                   MPLS FI                    January 2017
 
 
 
-Bryant, et al.            Expires July 27, 2017                 [Page 3]
+Bryant, et al.          Expires November 13, 2017               [Page 3]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    1.  The packets may traverse different sets of LSRs.
@@ -221,9 +221,9 @@ Internet-Draft                   MPLS FI                    January 2017
 
 
 
-Bryant, et al.            Expires July 27, 2017                 [Page 4]
+Bryant, et al.          Expires November 13, 2017               [Page 4]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    o  Per LSP - the basic form.
@@ -277,9 +277,9 @@ Internet-Draft                   MPLS FI                    January 2017
 
 
 
-Bryant, et al.            Expires July 27, 2017                 [Page 5]
+Bryant, et al.          Expires November 13, 2017               [Page 5]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    of the top label in the stack, since at any provider-edge (PE) or
@@ -333,9 +333,9 @@ Internet-Draft                   MPLS FI                    January 2017
 
 
 
-Bryant, et al.            Expires July 27, 2017                 [Page 6]
+Bryant, et al.          Expires November 13, 2017               [Page 6]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    that the scope of identity reside within that MPLS domain.  For
@@ -389,9 +389,9 @@ Internet-Draft                   MPLS FI                    January 2017
 
 
 
-Bryant, et al.            Expires July 27, 2017                 [Page 7]
+Bryant, et al.          Expires November 13, 2017               [Page 7]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    far as can be foreseen, any necessary change made to the MPLS data
@@ -445,9 +445,9 @@ Internet-Draft                   MPLS FI                    January 2017
 
 
 
-Bryant, et al.            Expires July 27, 2017                 [Page 8]
+Bryant, et al.          Expires November 13, 2017               [Page 8]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    degrade the privacy of user traffic below that of an MPLS network not
@@ -501,9 +501,9 @@ Internet-Draft                   MPLS FI                    January 2017
 
 
 
-Bryant, et al.            Expires July 27, 2017                 [Page 9]
+Bryant, et al.          Expires November 13, 2017               [Page 9]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    [RFC5420]  Farrel, A., Ed., Papadimitriou, D., Vasseur, JP., and A.
@@ -557,9 +557,9 @@ Authors' Addresses
 
 
 
-Bryant, et al.            Expires July 27, 2017                [Page 10]
+Bryant, et al.          Expires November 13, 2017              [Page 10]
 
-Internet-Draft                   MPLS FI                    January 2017
+Internet-Draft                   MPLS FI                        May 2017
 
 
    Zhenbin Li
@@ -613,4 +613,4 @@ Internet-Draft                   MPLS FI                    January 2017
 
 
 
-Bryant, et al.            Expires July 27, 2017                [Page 11]
+Bryant, et al.          Expires November 13, 2017              [Page 11]
