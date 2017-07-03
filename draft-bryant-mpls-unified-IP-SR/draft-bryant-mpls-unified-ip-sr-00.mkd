@@ -21,11 +21,23 @@ author:
        name: Xiaohu Xu
        org: Huawei
        email: xuxiaohu@huawei.com
+
+  -
+       ins: M. Chen
+       name: Mach Chen
+       org: Huawei
+       email: mach.chen@huawei.com
   -
        ins: A. Farrel
        name: Adrian Farrel
        org: Juniper Networks
        email: afarrel@juniper.net
+  - 
+       ins: J. Drake
+       name: John Drake
+       org: Juniper Networks
+       email: jdrake@juniper.net
+
 
 
 normative:
@@ -34,23 +46,68 @@ normative:
   I-D.ietf-spring-segment-routing-mpls:
   I-D.ietf-spring-segment-routing:
   RFC7510:
-  RFC2992:
-  RFC5082:
   RFC7510:
-  
-informative:
-  RFC3985:  
+  RFC5462:
 
+informative:
+  RFC2992:
+  RFC3985:  
+  I-D.ietf-6man-segment-routing-header:
+  I-D.xu-mpls-spring-islands-connection-over-ip:
+  I-D.ietf-spring-ipv6-use-cases:
+  I-D.xu-mpls-unified-source-routing-instruction:
+ 
 
 --- abstract
 
-This is an abstract abstract
+Segment routing is a new and powerful forwarding paradigm that allows
+packets to be steered through a network on paths other than the
+shortest path derived from the routing protocol.  The approach uses
+information encoded in the packet header and does not make use of a
+signaling protocol to pre-install paths in the network.
 
+Two different encapsulations have been defined to enable segment
+routing in an MPLS network and in an IPv6 network.  While
+acknowledging that there is a strong need to support segment routing
+in both environments, this document defines a converged, unified
+approach to segment routing that enables a single mechanism to be
+applied in both types of network.  The resulting approach is also
+applicable to IPv4 networks without the need for any changes to the
+IPv4 specification.
+
+This document makes no changes to the segment routing architecture
+and builds on existing protocol mechanisms such as the encapsulation
+of MPLS within UDP defined in RFC 7510.
+ 
 --- middle
 
 # Introduction
 
-sasddasd
+The approach to IPv6 segment routing (SR) described in  
+{{I-D.ietf-6man-segment-routing-header}}
+can be challenging to implement in some types of forwarder, particularly where a large
+number of instructions/segments are needed to specify the required behaviour. Furthermore,
+the approach does not allow the use of SR techniques in legacy IPv4 networks. In this
+document we describe a low overhead method for running SR in IP networks by using an
+MPLS label stack carried in UDP as a method of encoding the segment routing instructions to be 
+executed as the packet traverses the network. We call this Unified Segment Routing (USR).
+
+The method defined is a complementary way of running SR in an IP
+network when compared to {{I-D.ietf-6man-segment-routing-header}}.
+Implementers and deployers should consider the benefits and drawbacks
+of each method and only select the approach defined here where its
+properties are beneficial.
+
+The format that we propose requires 32 bits per additional instruction compared to
+the 128 bits for the method described in {{I-D.ietf-6man-segment-routing-header}}. The methods are further compared in {{COMPSEC}}.
+
+Although the segment routing instructions (i.e., the segment
+identifiers) are encoded as MPLS labels, this is
+a hardware convenience 
+rather than an indication that the whole MPLS protocol stack and in particular
+the MPLS control protocols need to be deployed. 
+It is a hardware convenience because many hardware components
+are already able to perform lookups based on MPLS labels.
 
 # Requirements Language
 
@@ -61,7 +118,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 
 # The Unified Segment Routing Protocol Stack
 
-The Unified Segment Routing (USR) protocol stack is shown below in {{FIGPktFormat}}. 
+The USR protocol stack is shown below in {{FIGPktFormat}}. 
 
                           +---------------------+
                           |                     |
@@ -76,163 +133,380 @@ The Unified Segment Routing (USR) protocol stack is shown below in {{FIGPktForma
                           .                     .
                           .                     .
                           +---------------------+
-                          |      Optional       |
-                          |      Metadata       |
-                          .                     .
-                          .                     .
-                          +---------------------+
                           |                     |
                           |      Payload        |
                           .                     .
                           .                     .
                           +---------------------+
-{: #FIGPktFormat title="Protocol Stack"}
+{: #FIGPktFormat title="Packet Encapsulation"}
 
 The payload may be of any type that, with an appropriate convergence
-layer can be carried over a packet network. It is anticipated that the 
-most common packet types will be IPv4, IPv6 and pseudowires {{RFC3985}}.
+layer, can be carried over a packet network. It is anticipated that the 
+most common packet types will be IPv4, IPv6, native MPLS and pseudowires {{RFC3985}}.
 
-Preceesing the Payload is any payload meta-data that is required. This is an
-optional field.
+Preceding the Payload is the Segment Routing Instruction Stack (SRIS) that
+carries the sequence of instructions to be executed on the packet as
+it traverses the network.  This is the Segment Identifier (SID)
+stack.
 
-Preceeding the meta-data is the Segment Routing Instruction Stack (SRIS) which
-carries the sequence of instructions to be executed on the packet as it traverses
-the network.
+Preceding the SRIS is a UDP header. The UDP header is included to:
 
-Preceeding the meda-data is a UDP header which is primarily used
-to introduce entropy to allow equal-cost multi-path load balancing (ECMP) {{RFC2992}} in the 
-IP layer {{RFC7510}}.
+- Introduce entropy to allow equal-cost multi-path load balancing (ECMP) 
+{{RFC2992}} in the IP layer {{RFC7510}}.
 
-Preceeding the UDP header is the IP header which may be IPv4 or IPv6.
+- Provide a protocol multiplexing layer as an alternative to using a new IP type/next header.
+
+- Allow transit through firewalls and other middleboxes.
+
+- Provide disagregation.
+
+Preceding the UDP header is the IP header which may be IPv4 or IPv6.
 
 # The Segment Routing Instruction Stack
 
-The core of the protocol stack is the Segment Routing Instruction Stack (SRIS).
-This consisists of a stack of Segment Identifiers  as described in 
-{{I-D.ietf-spring-segment-routing}} encoded as an MPLS label stack as descibed in
+The core of the protocol encapsulation is the Segment Routing Instruction Stack (SRIS).
+This consists of a stack of Segment Identifiers  as described in 
+{{I-D.ietf-spring-segment-routing}} encoded as an MPLS label stack as described in
 {{I-D.ietf-spring-segment-routing-mpls}}. 
 
 The top SRIS entry
 is the next instruction to be executed. When the node to which this instruction is
-directed has processed the instruction it is removed (poped) from the SRIS, and the next
-instruction processed. A discussion of the currently valid SRIS operations is provided in
-{{SRISOPS}}.
+directed has processed the instruction it is removed (popped) from the SRIS, and the next
+instruction processed.
 
+Each Instruction is encoded in a single Label Stack Entry (LSE) as
+shown in {{FIGSRISFormat}}.  The basic structure of the LSE is unchanged from
+{{RFC3032}} and the meanings of the Traffic Class, Bottom of Stack, and
+Time to Live fields are also unchanged.
 
 ## SRIS Format
 
-The SRIS uses the same format as {{RFC3032}}. This is a compact representation
-that allows the use of exiting data plane hardware. Its use does not imply that
-MPLS needs to be enabled, or that MPLS protocols need to be used. It simply
-a compact, convenient way of carrying the Instructions (Segment IDs or SIDs) needed
-as the packet traverses the network.
+As described in [I-D.ietf-spring-segment-routing-mpls],
+the SRIS uses the same format as {{RFC3032}}. This is a compact representation
+that allows the use of existing data plane hardware. Its use does not imply that
+MPLS needs to be enabled, or that MPLS protocols need to be used. It is simply
+a compact, convenient way of carrying the instructions (the SIDs) needed
+to direct how the packet traverses the network.
 
      0                   1                   2                   3
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
-    |              Instruction                  | TC  |S|   TTL     | SRIS
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ Entry
+    |              Instruction                  | TC  |S|   TTL     |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
                     Instruction:  Label Value, 20 bits
-                    TC:           Trafic Class, 3 bits
+                    TC:           Traffic Class, 3 bits
                     S:            Bottom of Stack, 1 bit
                     TTL:          Time to Live, 8 bits
-{: #FIGSRISFormat title="SRIS Entry"}
+{: #FIGSRISFormat title="SRIS Label Stack Entry"}
 
-As with {{I-D.ietf-spring-segment-routing-mpls}} a 20 bit Instruction is
-used. The S bit has bottom of stack semantics defined in {{RFC3032}}.
-TTL and TC are discussed in {{TTLSec}} and {{TCSec}} respectively.
+As with {{I-D.ietf-spring-segment-routing-mpls}} a 32 bit LSE is used
+to carry each SR instruction.  The instruction itself is carried in
+the 20 bit Label Value field.  The TC field has the normal meaning as
+defined in {{RFC3032}} and modified in {{RFC5462}}.  The S bit has bottom
+of stack semantics defined in {{RFC3032}}.  TTL is discussed in
+{{TTLSec}}.
+
 
 
 ## TTL {#TTLSec}
 
-Where the SRIS is being used in a pure IP environment there are two strategies
-for setting the TTL. One approach is to set it to a low value to limit the 
-distance the packet can travel if it should ever be incorrectly forwarded as
-an MPLS packet. A value of one should be acceptable subject to hardware
-behaviour. On the other since each SRIS entry is used only once and then
-discarded, there is merit in following the advice of {{RFC5082}} and setting
-the TTL to 255. If configured to operate in this mode if an SRIS entry is 
-ever received with a value of other 255 the system SHOULD discard the packet
-and alert the operator.
-
-As noted in {{HYBRID}} it is possible to use the system in a mixed IP/MPLS
-environment, in which case the TTL should be set to 255, as otherwise
-configured by the operator or ass needed for any OAM operation.
-
-## TC {#TCSec}
-
-This has the normal meaning as defined in {{RFC3032}} and modified in {{RFC5462}}.
-
-# SRIS Operations {#SRISOPS}
+The setting of the TTL is application specific, but the following operational
+consideration should be born in mind. In SR the size of the label stack may be increased 
+within a single routing domain by various operations such as the pushing of a binding SID.
+Furthermore in SR packets are not necessarily constrained to travel on the shortest
+path with that routing domain. Consideration therefore has to be given to possibility
+of a forwarding loop. To mitigate against this it is RECOMMENDED that the TTL is 
+continuously decremented as the packet passes through the SR network regardless of
+any other changes to the network layer encapsulation.
 
 
+# UDP/IP Encapsulation.
 
-# UDP/IP encapsulation.
-
-The proceedures defined in {{RFC7510}} are followed. RFC7510 specifies the
+The procedures defined in {{RFC7510}} are followed. RFC7510 specifies the
 values to be used in the UDP Source Port, Destination Port, and Checksum
-fields. 
+fields.
 
 An administrative domain, or set of administrative domains that are 
 sufficiently well managed and monitored to be able to safely use IP 
 segment routing is likely to comply with the requirements called out
-in RFC7510 to permit operation with a zero checksum over IPv6. However
+in {{RFC7510}} to permit operation with a zero checksum over IPv6. However
 each operator needs to validate the decision on whether or not to use
 a UDP checksum for themselves.
 
-The RFC7510 UDP header may be carried over IPv4 or over IPv6.
+The {{RFC7510}} UDP header may be carried over IPv4 or over IPv6.
+
+The IP source address is the address of the encapsulating device. The 
+IP destination address is implied by the instruction at the top of
+the instruction stack.
+
+If IPv4 is in use fragmentation is not permitted.
+
+# Metadata {#META}
+
+There are a number of ways that metadata could be carried:
+
+- The metadata could be included in the packet.
+- A SID could point to locally stored metadata.
+- Metadata could be carried in a support packet that does not include any user data.
+- Metadata could be provided out of band.
+
+Metadata is for future study.
 
 
+# Elements of Procedure
+
+There are six type of node in an SR domain:
+
+- Domain ingress nodes that receive packets and encapsulate them for
+  transmission across the domain.  These packets may be native IP
+  packets or may already be SR packets.
+
+- Legacy transit nodes that are IP routers but are not able to 
+  perform segment routing.
+
+- Transit nodes that are SR capable but that are not identified by a
+  SID in the SID stack.
+
+- Transit nodes that are SR capable and need to perform SR routing.
+
+- The penultimate SR capable node on the path that processes the last
+  SID on the stack.
+
+- The domain egress node that forwards the payload packet for
+  ultimate delivery.
+
+ The following sub-sections describe the processing behavior in each
+ case.
+
+## Domain Ingress {#SECDI}
+
+Domain ingress nodes receive packets from outside the domain and 
+encapsulate them to be forwarded across the domain.  Received packets
+may already be MPLS-SR packets (in the case of connecting two MPLS-SR
+networks across a native IP network) or may be IP or MPLS packets.
+
+In the latter case, the packet is classified by the domain ingress 
+node and an MPLS-SR stack is imposed.  In the former case the MPLS-SR
+stack is already in the packet.  The top entry in the stack is popped
+from the stack and retained for use below.
+
+The packet is then encapsulated in UDP with the destination port set 
+to 6635 to indicate "MPLS-UDP" as described in [RFC7510].  The source
+UDP port is set randomly or to provide entropy as described in
+{{RFC7510}}.
+
+The packet is then encapsulated in IP for transmission across the
+network.  The IP source address is set to the domain ingress node, 
+and the destination address is set to the address corresponding to 
+the label that was previously popped from the stack.
+  
+The packet is then sent into the IP network routing the packet 
+according to the local FIB and applying hashing to resolve any ECMP
+choices.
+
+## Legacy Transit {#SECLT}
+
+A legacy transit node is an IP router that has no SR capabilities.  
+When such a router receives an MPLS-SR-in-UDP packet it will carry
+out normal TTL processing and if the packet is still live it will
+forward it as it would any other UDP-in-IP packet.  The packet will
+be routed toward the destination indicated in the packet header using
+the local FIB and applying hashing to resolve any ECMP choices.
+
+## On-Path Pass-Through SR Nodes {#OPPT}
+
+Just because a node is SR capable and receives an MPLS-SR-in-UDP
+packet does not mean that it performs SR processing on the packet.
+Only routers identified by SIDs in the SR stack need to do such 
+processing.
+
+Routers that are not addressed by the destination address in the IP
+header simply treat the packet as a normal UDP-in-IP packet carrying
+out normal TTL processing and if the packet is still live routing the
+packet according to the local FIB and applying hashing to resolve any
+ECMP choices.
+
+## SR Transit Nodes {#SecTransit}
+
+When a router receives an MPLS-SR-in-UDP packet that is addressed to
+it, it acts as follows:
+
+- Perform TTL processing as normal for an IP packet
+- Determine that the packet is addressed to the local node
+- Find that the payload is UDP and that the destination port 
+  indicates MPLS-in-IP
+- Strip the IP and UDP headers
+- Pop the top label from the SID stack and retain it for use below
+- Encapsulate the packet in UDP with the destination port set 
+  to 6635 and the source port set for entropy.
+- Encapsulate the packet in IP with the IP source address set to this
+  transit router, and the destination address set to the address
+  corresponding to the label that was previously popped from the
+  stack.
+- Send the packet into the IP network routing the packet according to
+  the local FIB and applying hashing to resolve any ECMP choices.
+
+## Penultimate SR Transit {#SECPSRT}
+
+The penultimate SR transit node is only different from the SR transit 
+node described in {{SecTransit}} because it pops the final MPLS-SR SID
+from the stack.  In order to avoid confusion at the egress, the 
+router replaces the popped SR label with an explicit null label 
+(label value 0 {{RFC3032}}).  The packet is then encapsulated and sent
+as described in {{SecTransit}}.
+
+## Domain Egress {#SECDE}
+
+The domain egress strips the IP and UDP headers, pops the explicit 
+null label, and forwards the payload packet according to its type and
+the local routing/forwarding mechanisms.
+
+#  Modes of Deployment
+
+As previously noted, the procedures described in this document may be
+used to connect islands of SR functionality across an IP backbone, or
+can provide SR function within a native IP network.  This section
+briefly expounds upon those two deployment modes.
+
+## Interconnection of SR Domains
+
+{{FIGA}} shows two SR domains interconnected by an IP network.  The
+procedures described in this document are deployed at border routers
+R1 and R2 and packets are carried across the backbone network in a
+UDP tunnel.
+
+R1 acts as the domain ingress as described in {{SECDI}}.  It takes
+the MPLS-SR packet from the SR domain, pops the top label and uses it
+to identify its peer border router R2.  R1 then encapsulates the 
+packet in UDP in IP and sends it toward R2.  
+
+Routers within the IP network simply forward the packet using normal
+IP routing.
+
+R2 acts as a domain egress router as described in {{SECDE}}.  It
+receives a packet that is addressed to it, strips the IP and UDP
+headers, and acts on the payload SR label stack to continue to 
+route the packet.
 
 
+                     ________________________
+        ______      (                        )      ______   
+       (      )    (        IP Network        )    (      )  
+      (        )  (                            )  (        ) 
+     (      --------                          --------      )
+    (      | Border |    SR-in-UDP Tunnel    | Border |      )
+    (  SR  | Router |========================| Router |  SR  )
+    (      |   R1   |                        |   R2   |      )
+     (      --------                          --------      )
+      (        )  (                            )  (        )
+       (______)    (                          )    (______) 
+                    (________________________)
+{: #FIGA title="SR in UDP to Tunnel Between SR Sites"}
+                                          
 
+## SR Within and IP Network
 
+{{FIGB}} shows the procedures defined in this document to provide
+SR function across an IP network.
 
+R1 receives a native packet and classifies determining that it
+should be sent on the SR path R2-R3-R4-R5.  It imposes a label 
+stack accordingly and then acts as a domain ingress as described in
+{{SECDI}}.  It pops the label for R2, and encapsulates the packet
+in UDP in IP, sets the IP source to R1 and the IP destination to R2,
+and sends the packet into the IP network.
 
+Routers Ra and Rb are transit routers that simply forward the packets
+using normal IP forwarding.  They may be legacy transit routers (see
+{{SECLT}}) or on-path pass-through SR nodes (see {{OPPT}}).
 
+R2 is an SR transit nodes as described in {{SecTransit}}. It receives a
+packet addressed to it, strips the IP and UDP headers, and processes
+the SR label stack.  It pops the top label and uses it to identify 
+the next SR hop which is R3.  R2 then encapsulates the packet in UDP
+in IP setting the IP source to R2 and the IP destination to R3.
 
+Rc, Rd, and Re are transit routers and perform as Ra and Rb.
 
-# Equal Cost Multi-path support
-ASDASD
+R3 is an SR transit nodes and performs as R2.
 
-# Multicast
+R4 is a penultimate SR transit node as described in {{SECPSRT}}.  It
+receives a packet addressed to it, strips the IP and UDP headers, and
+processes the SR label stack.  It pops the top label and uses it to 
+identify the next SR hop which is R5.  This was the last label in the
+stack so R4 includes an explicit null label before encapsulating the
+packet in UDP in IP setting the IP source to R4 and the IP 
+destination to R5.
 
-# Metadata
-Asdasd
+R5 is the domain egress as described in {{SECDE}}.  It receives a
+packet addressed to it, strips the IP and UDP headers, and pops the
+explicit null label before forwarding the payload packet.
 
-# Hybrid Operation {#HYBRID}
-
-# UDP Encapsulation
-
-# IP Encapsulation
-
-# Elements of Proceedure
-asdasd
-
-# An MPLS Hop
+                     __________________________________
+                  __(           IP Network             )__           
+               __(                                        )__    
+              (               --        --        --         )
+         --------   --   --  |R2|  --  |R3|  --  |R4|  --   --------  
+        | Ingress| |Ra| |Rb| |  | |Rc| |  | |Rd| |  | |Re| | Egress | 
+    --->| Router |===========|  |======|  |======|  |======| Router |--->
+        |   R1   | |  | |  | |  | |  | |  | |  | |  | |  | |   R5   | 
+         --------   --   --  |  |  --  |  |  --  |  |  --   --------  
+              (__             --        --        --       __)
+                 (__                                    __)
+                    (__________________________________)                
+{: #FIGB title="SR Within an IP Network"}
 
 # OAM
 
+OAM at the payload layer follow the normal OAM procedures for the payload. To
+the payload the whole SR network looks like a tunnel. 
+
+OAM in the IP domain follows the normal IP procedures. This can only be carried
+out between IP hops.
+
+OAM between instruction processing entities i.e. at the SR layer uses the 
+procedures documented for MPLS.
+
+# Comparison with SRv6 {#COMPSEC}
+
+The format described in {{I-D.ietf-6man-segment-routing-header}} hereon referred to as SRv6
+requires an initial 36 octet IPv6 header but cannot support IPv4. USR
+requires either am initial 36 octet IPv6 header
+of an initial 20 octet IPv4 header.
+
+o SRv6 requires an 8 octet SR header, USR requires a UDP header which is also 8 octets.
+
+o SRv6 requires 16 octets per SID, whereas USR requires only 4 octets per SID.
+
+o The SRv6 SIDs can be a global identifier, but the USR SIDs cannot be.
+
+o SRv6 has an extension to support path repair at the SR level. This is for further study with USR.
+
+o SRv6 includes the intended path history in the packet. USR would require the path history to be added as metadata.
+
+
 # Security Considerations
-asdasd
+
+It is difficult for an attacker to pass a raw MPLS encoded packet into a network and 
+operators have considerable experience at excluding such packets.
+
+It is easy for an ingress node to detect any attempt to smuggle IP packet into the network
+since it would see that the UDP destination port was set to MPLS. As noted in {{META}}
+legitimate packets for SR processing within the network could be signed. SR packets not
+having a destination address terminating in the network would be transparently carried and
+would pose no security risk to the network under consideration. 
+
+The security consideration of  {{I-D.ietf-spring-ipv6-use-cases}} and {{RFC7510}}
+apply.
 
 # IANA Considerations
-ASASD
 
-# Just keep the text for a bit
+This document makes no IANA requests.
 
-Preceeding the SRIS are the fields used to deliver the packet to the node that will 
-process the instruction at the top of the SRIS. The outer header is an IP header. 
-It can be an IPv4 or an IPv6 header as required to traverse the next SR hop. 
+# Acknowledgements
 
-The next header is an  UDP header. This is used to provide Equal Cost 
-Multi-Path (ECMP) load balancing. The use of a UDP header allows nodes on the path to
-load balance based on the five tuple (Source Address, Destination Address, 
-IP type/next header, UDP soure port and UDP destination port) universally used 
-by modern routers.
-
-Following the SRIS is optional metadata. This allows nodes to record information 
-as the packet passes through the network, and it allows the ingress node to record 
-record information that the terminal node needs to process the packet, such as return
-path information, content identifiers etc.
+This draft was inspired by {{I-D.xu-mpls-unified-source-routing-instruction}},
+and we acknowlegde the following authors of that draft: Robert Raszuk, Uma Chunduri,
+Luis M. Contreras, Luay Jalil, Hamid Assarpour, Gunter Van De Velde, Jeff Tantsura,
+and Shaowen Ma.
