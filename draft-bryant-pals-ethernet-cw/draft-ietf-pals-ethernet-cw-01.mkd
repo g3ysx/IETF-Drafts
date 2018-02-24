@@ -183,7 +183,7 @@ pseudowire control word, then the CW MUST be used.
 
 Where the ingress PE supports RFC6790 {{RFC6790}} (ELI) and both ingress
 and egress PEs support RFC6391 {{RFC6391}} (FAT PW) and ECMP of Ethernet
-PW traffic is required then only one of these methods should be used.
+PW traffic is required, then only one of these methods should be used.
 In the case of multi-segment PWs, if ELI is used then it should be
 used on every segment of the PW.
 
